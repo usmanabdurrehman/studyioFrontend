@@ -1,0 +1,219 @@
+.postCard {
+  margin: 35px 0;
+  border-radius: 12px;
+  box-shadow: 2px 2px 8px #aaa;
+  padding: 20px 30px;
+  background-color: white;
+
+  font-size: 14px;
+}
+
+.postCardFooter {
+  display: flex;
+  align-items: flex-start;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.likeWrapper {
+  flex-basis: 65px;
+  margin-top: -8px;
+  display: flex;
+  align-items: center;
+}
+
+.likesCount {
+  margin: 0;
+  margin-top: -5px;
+  font-size: 12px;
+}
+
+.commentWrapper {
+  flex: 1;
+}
+
+.cardHeader {
+  display: grid;
+  grid-template-columns: 65px 1fr 50px;
+  grid-gap: 10px;
+}
+
+.profilePicture {
+  height: 50px;
+  width: 50px;
+  border-radius: 4px;
+}
+
+.nameHandle {
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+.nameHandle > a {
+  text-decoration: none;
+  color: black;
+}
+
+.cardBody {
+  margin-top: 20px;
+}
+
+.MuiButtonBase-root {
+  margin-top: -6px !important;
+}
+
+.MuiOutlinedInput-input {
+  padding: 10px !important;
+}
+
+.commentInput {
+  border-color: #007bff;
+  font-size: 13px;
+  padding: 6px;
+  width: 100%;
+  border-style: solid;
+  border-width: 1.4px;
+  border-radius: 0 20px 20px 0;
+  transition: 0.4s;
+}
+
+.commentInput:focus {
+  outline: none !important;
+}
+
+/*.comment-input:focus{
+	border-color:#6610f2;
+}*/
+
+.nameplate {
+  background-color: #007bff;
+}
+
+.comment {
+  background-color: #007bff;
+  color: white;
+  padding: 8px;
+  border-radius: 0 30px 30px 0;
+  margin: 8px 0;
+  font-size: 13px;
+}
+
+.commenter {
+  background-color: #2e25d7;
+  padding: 4px;
+  border-radius: 5px;
+  font-size: 13px;
+}
+
+.commentText {
+  padding: 6px;
+  padding-left: 4px;
+}
+
+.addCommentButton {
+  border-radius: 20px 0 0 20px !important;
+}
+
+.deleteIcon {
+  color: #f50057;
+  color: red;
+  transition: 0.2s;
+  margin-right: 0;
+}
+
+.editButton {
+  color: white;
+}
+
+.likeIcon {
+  transition: 0.2s;
+  color: gray;
+}
+
+.liked {
+  color: #007bff;
+}
+
+.fileContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-gap: 10px;
+  padding: 10px;
+}
+
+.fileContainer > a {
+  text-decoration: none;
+  color: black;
+}
+
+.fileCard {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+
+  transition: 0.3s;
+  padding-left: 10px;
+}
+
+.fileCardIcon {
+  width: 40px;
+  margin-left: 10px;
+}
+
+.fileName {
+  font-size: 13px;
+
+  margin-left: 15px;
+  flex: 1;
+  /* These are technically the same, but use both */
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+
+  -ms-word-break: break-all;
+  /* This is the dangerous one in WebKit, as it breaks things wherever */
+  word-break: break-all;
+  /* Instead use this non-standard one: */
+  word-break: break-word;
+
+  /* Adds a hyphen where the word breaks, if supported (No Blink) */
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+
+  text-overflow: ellipsis;
+}
+
+.fileCard > div > div {
+  margin: 0;
+}
+
+.moreText {
+  color: gray;
+  cursor: pointer;
+}
+
+.moreText:hover {
+  text-decoration: underline;
+}
+
+.postImagesWrapper {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+.postImagesWrapper > div > img {
+  width: 100%;
+}
+
+.postOption {
+  padding: 15px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.postOption:hover {
+  background-color: #f4f4f4;
+}
