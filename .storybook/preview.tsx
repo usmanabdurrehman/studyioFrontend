@@ -1,5 +1,6 @@
 import { ChakraProvider } from "@chakra-ui/react";
 import type { Preview } from "@storybook/react";
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 
 const preview: Preview = {
   parameters: {
@@ -13,9 +14,11 @@ const preview: Preview = {
   },
   decorators: [
     (Story) => (
-      <ChakraProvider>
-        <Story />
-      </ChakraProvider>
+      <QueryClientProvider client={new QueryClient({})}>
+        <ChakraProvider>
+          <Story />
+        </ChakraProvider>
+      </QueryClientProvider>
     ),
   ],
 };

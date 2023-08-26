@@ -2,7 +2,7 @@ import { IconButton, Input } from "@chakra-ui/react";
 import { ChangeEvent, useRef } from "react";
 
 interface FileUploadProps {
-  icon: React.ReactNode;
+  icon: React.ReactElement;
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
   ariaLabel: string;
   accept?: string;

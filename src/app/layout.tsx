@@ -2,6 +2,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ChakraProviderWrapper } from "./ChakraProvider";
+import { QueryClientProviderWrapper } from "./QueryClientProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,7 +19,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ChakraProviderWrapper>{children}</ChakraProviderWrapper>
+        <QueryClientProviderWrapper>
+          <ChakraProviderWrapper>{children}</ChakraProviderWrapper>
+        </QueryClientProviderWrapper>
       </body>
     </html>
   );

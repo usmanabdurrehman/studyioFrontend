@@ -4,14 +4,14 @@ import { useMutation } from "@tanstack/react-query";
 import { GraphQLClient, gql } from "graphql-request";
 
 const signup = gql`
-  mutation signup($data: SocialUserCreateInput!) {
-    createSocialUser(data: $data) {
+  query signin($email: SocialUserCreateInput!) {
+    socialUser(where: { email: $email }) {
       id
     }
   }
 `;
 
-export const useSignup = () => {
+export const useSignin = () => {
   return useMutation(async (data: User) => {
     return await client.request(signup, { data });
   });

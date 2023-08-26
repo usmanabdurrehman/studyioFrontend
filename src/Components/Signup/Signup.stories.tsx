@@ -1,10 +1,10 @@
 import type { StoryFn } from "@storybook/react";
 import React, { useState, useEffect } from "react";
 
-import { Signin } from ".";
+import { Signup } from ".";
 
 export default {
-  component: Signin,
+  component: Signup,
 };
 
 export const Base = {

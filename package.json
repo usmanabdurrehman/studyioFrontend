@@ -23,12 +23,14 @@
     "eslint-config-next": "13.4.12",
     "formik": "^2.4.3",
     "framer-motion": "^10.15.0",
+    "graphql": "^16.8.0",
     "graphql-request": "^6.1.0",
     "next": "13.4.12",
     "next-auth": "^4.22.3",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-icons": "^4.10.1",
+    "react-swipeable-views": "^0.14.0",
     "typescript": "5.1.6"
   },
   "devDependencies": {
@@ -40,6 +42,7 @@
     "@storybook/nextjs": "7.2.2",
     "@storybook/react": "7.2.2",
     "@storybook/testing-library": "0.2.0",
+    "@types/react-swipeable-views": "^0.13.2",
     "eslint-plugin-storybook": "^0.6.13",
     "storybook": "7.2.2"
   }

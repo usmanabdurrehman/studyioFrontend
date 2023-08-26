@@ -1,7 +1,18 @@
 "use client";
 
 import { Post } from "@/types";
-import { Box, Button, Flex, IconButton, Image, Input } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  IconButton,
+  Image,
+  Input,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+} from "@chakra-ui/react";
 import React, { memo } from "react";
 import { FaEllipsis, FaThumbsUp } from "react-icons/fa6";
 
@@ -23,39 +34,47 @@ const PostCard = memo(({ post, likePost, unlikePost }: PostCardProps) => {
   const user: any = {};
 
   return (
-    <div className={styles.postCard}>
-      <Flex
-        className={styles.cardHeader}
-        alignItems="center"
-        justifyContent={"space-between"}
-      >
+    <Box
+      borderRadius={12}
+      boxShadow={"lg"}
+      padding={"20px 30px"}
+      background={"white"}
+      fontSize={14}
+    >
+      <Flex alignItems="center" justifyContent={"space-between"}>
         <Box>
           <Flex gap={2} alignItems="center">
             <Image
-              className={styles.profilePicture}
               src={post?.user?.profileImage}
               height={35}
               width={35}
               borderRadius={"50%"}
               alt="Profile"
             />
-            <p className={styles.nameHandle}>
+            <p>
               {post?.user?.name}
               {/* <Link to={`/profile/${post.userId}`}>{post?.user?.name}</Link> */}
             </p>
           </Flex>
         </Box>
         <Box>
-          <IconButton
-            icon={<FaEllipsis />}
-            aria-label={"More Post Options"}
-            size="xs"
-            onClick={() => {}}
-          />
+          <Menu>
+            <MenuButton
+              as={IconButton}
+              aria-label="More Post Options"
+              icon={<FaEllipsis />}
+              size="xs"
+            />
+            <MenuList>
+              <MenuItem>Edit</MenuItem>
+              <MenuItem>Delete</MenuItem>
+              <MenuItem>Hide</MenuItem>
+            </MenuList>
+          </Menu>
         </Box>
       </Flex>
-      <div
-        className={styles.cardBody}
+      <Box
+        mt={5}
         dangerouslySetInnerHTML={{
           __html: post.postText,
         }} /* eslint react/no-danger: 0 */
@@ -69,8 +88,8 @@ const PostCard = memo(({ post, likePost, unlikePost }: PostCardProps) => {
           ))}
         </Flex>
       )}
-      <form className={styles.postCardFooter} onSubmit={() => {}}>
-        <Flex alignItems={"center"} gap={4} width="100%">
+      <Box mt={5}>
+        <Flex alignItems={"flexStart"} gap={4} width="100%">
           <Box>
             <IconButton
               icon={<FaThumbsUp />}
@@ -86,9 +105,7 @@ const PostCard = memo(({ post, likePost, unlikePost }: PostCardProps) => {
               aria-label="Like Post"
             />
 
-            {post.likes?.length !== 0 && (
-              <p className={styles.likesCount}>{post.likes?.length}</p>
-            )}
+            {!!post.likes?.length && <p>{post.likes?.length}</p>}
           </Box>
           <Box flex="1">
             <Input
@@ -98,30 +115,25 @@ const PostCard = memo(({ post, likePost, unlikePost }: PostCardProps) => {
               width="100%"
               borderWidth={1.4}
               borderRadius="0 20px 20px 0"
-              className={styles.commentInput}
               onChange={() => {}}
               value={comment}
               placeholder="Comment..."
             />
-            {post.comments &&
-              (showMore
-                ? post.comments?.map((postComment) => (
-                    <Comment comment={postComment} />
-                  ))
-                : post?.comments
-                    .slice(0, 2)
-                    .map((postComment) => <Comment comment={postComment} />))}
+            <Box mt={2}>
+              {post.comments &&
+                (showMore
+                  ? post.comments?.map((postComment) => (
+                      <Comment comment={postComment} />
+                    ))
+                  : post?.comments
+                      .slice(0, 2)
+                      .map((postComment) => <Comment comment={postComment} />))}
+            </Box>
+
             {post.comments?.length > 2 && (
-              <div
-                onClick={toggleShowMore}
-                onKeyPress={toggleShowMore}
-                role="button"
-                tabIndex={-1}
-              >
-                <p className={styles.moreText}>
-                  {showMore ? "Show Less" : "Show More"}
-                </p>
-              </div>
+              <Button size="xs" onClick={toggleShowMore}>
+                {showMore ? "Show Less" : "Show More"}
+              </Button>
             )}
           </Box>
           <Box>
@@ -130,76 +142,8 @@ const PostCard = memo(({ post, likePost, unlikePost }: PostCardProps) => {
             </Button>
           </Box>
         </Flex>
-      </form>
-      {/* <Popover
-          id={id}
-          open={open}
-          anchorEl={anchorEl}
-          onClose={handleClose}
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "left",
-          }}
-          transformOrigin={{
-            vertical: "top",
-            horizontal: "left",
-          }}
-        >
-          <div className={styles.postOptions}>
-            {user._id === post.userId && (
-              <>
-                <div
-                  className={styles.postOption}
-                  onClick={() => {
-                    handleClose();
-                    editPost(post._id);
-                  }}
-                  onKeyPress={() => {
-                    handleClose();
-                    editPost(post._id);
-                  }}
-                  role="button"
-                  tabIndex="-1"
-                >
-                  Edit
-                </div>
-                <div
-                  className={styles.postOption}
-                  onClick={() => {
-                    handleClose();
-                    deletePost(post._id);
-                  }}
-                  onKeyPress={() => {
-                    handleClose();
-                    deletePost(post._id);
-                  }}
-                  role="button"
-                  tabIndex="-1"
-                >
-                  Delete
-                </div>
-              </>
-            )}
-            {user._id !== post.userId && (
-              <div
-                className={styles.postOption}
-                onClick={() => {
-                  handleClose();
-                  post?.hidden ? unhidePost(post._id) : hidePost(post._id);
-                }}
-                onKeyPress={() => {
-                  handleClose();
-                  post?.hidden ? unhidePost(post._id) : hidePost(post._id);
-                }}
-                role="button"
-                tabIndex="-1"
-              >
-                {post?.hidden ? "Unhide" : "Hide"}
-              </div>
-            )}
-          </div>
-        </Popover> */}
-    </div>
+      </Box>
+    </Box>
   );
 });
 

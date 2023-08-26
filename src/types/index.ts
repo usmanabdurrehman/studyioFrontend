@@ -19,7 +19,7 @@ export interface Post {
   comments: Comment[];
 }
 
-export interface Post {
+export interface User {
   updatedAt?: Date;
   createdAt?: Date;
   email: string;

@@ -1,10 +1,10 @@
 import type { StoryFn } from "@storybook/react";
 import React, { useState, useEffect } from "react";
 
-import { Signin } from ".";
+import Chat from "./Chat";
 
 export default {
-  component: Signin,
+  component: Chat,
 };
 
 export const Base = {
