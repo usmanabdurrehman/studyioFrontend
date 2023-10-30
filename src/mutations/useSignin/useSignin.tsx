@@ -1,18 +1,13 @@
-import { client } from "../../graphqlClient";
-import { Post, User } from "@/types";
+import service from "@/services";
 import { useMutation } from "@tanstack/react-query";
-import { GraphQLClient, gql } from "graphql-request";
-
-const signup = gql`
-  query signin($email: SocialUserCreateInput!) {
-    socialUser(where: { email: $email }) {
-      id
-    }
-  }
-`;
 
 export const useSignin = () => {
-  return useMutation(async (data: User) => {
-    return await client.request(signup, { data });
+  return useMutation(async (fields) => {
+    const { data } = await service({
+      url: "/signin",
+      method: "post",
+      data: fields,
+    });
+    return data;
   });
 };

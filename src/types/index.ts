@@ -29,3 +29,5 @@ export interface User {
   lastName: string;
   posts?: Post[];
 }
+
+export type UserCreds = Pick<User, "email" | "password">;

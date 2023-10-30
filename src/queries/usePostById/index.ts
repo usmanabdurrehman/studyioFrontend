@@ -1,0 +1,1 @@
+export { usePostById } from "./usePostById";

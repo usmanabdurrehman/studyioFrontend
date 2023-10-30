@@ -1,3 +1,5 @@
+"use client";
+
 import { useSignup } from "../../mutations";
 import {
   Box,
@@ -12,12 +14,13 @@ import {
 } from "@chakra-ui/react";
 import { Field, FieldProps, Formik } from "formik";
 import React, { memo, useMemo } from "react";
+import { isRegularExpressionLiteral } from "typescript";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
-interface SignupProps {
-  onSuccess: () => void;
-}
+interface SignupProps {}
 
-const Signup = memo(({ onSuccess }: SignupProps) => {
+const Signup = memo(({}: SignupProps) => {
   const initialValues = useMemo(
     () => ({
       firstName: "",
@@ -28,6 +31,8 @@ const Signup = memo(({ onSuccess }: SignupProps) => {
     []
   );
 
+  const router = useRouter();
+
   const { mutateAsync: signup } = useSignup();
 
   return (
@@ -35,13 +40,13 @@ const Signup = memo(({ onSuccess }: SignupProps) => {
       initialValues={initialValues}
       onSubmit={async (values) => {
         await signup(values);
-        onSuccess();
+        router.push("/signin");
       }}
     >
       {({ submitForm }) => {
         return (
           <Flex height="100vh" gap={6}>
-            <Flex flex="1" alignItems={"center"}>
+            <Flex flex="1" alignItems={"center"} p={5}>
               <div>
                 <Text fontSize={"3xl"}>Sign Up</Text>
                 <Field name="firstName">
@@ -91,21 +96,17 @@ const Signup = memo(({ onSuccess }: SignupProps) => {
                 >
                   Sign up
                 </Button>
-                {/* <p className={styles.linkText}>
-                  Haven&apos;t got an account?{" "}
+                <Text fontSize="sm" mt={2}>
+                  Already have an account?{" "}
                   <u>
-                    <Link className={styles.link} to="/signup">
-                      Sign up
-                    </Link>
+                    <Link href="/signin">Sign in</Link>
                   </u>
-                </p> */}
+                </Text>
               </div>
             </Flex>
             <Box
               flex="3"
-              bg={
-                'url("https://media.istockphoto.com/id/1321462048/photo/digital-transformation-concept-system-engineering-binary-code-programming.jpg?s=612x612&w=0&k=20&c=Ib8RLw3_eCOo9N3YE4pvp9rcb_WmirjS-9x9R-vTd68=")'
-              }
+              bg={'url("./cover/signup.jpg")'}
               backgroundSize="cover"
             />
           </Flex>

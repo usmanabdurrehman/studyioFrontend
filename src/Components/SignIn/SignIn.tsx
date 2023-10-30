@@ -1,3 +1,6 @@
+"use client";
+
+import { useSignin } from "@/mutations/useSignin";
 import {
   Box,
   Button,
@@ -11,6 +14,8 @@ import {
 } from "@chakra-ui/react";
 import { Field, FieldProps, Formik } from "formik";
 import React, { memo, useMemo } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const SignIn = memo(() => {
   const initialValues = useMemo(
@@ -22,19 +27,31 @@ const SignIn = memo(() => {
     []
   );
 
+  const { mutateAsync: signin } = useSignin();
+  const router = useRouter();
+
   return (
-    <Formik initialValues={initialValues} onSubmit={() => {}}>
-      {({}) => {
+    <Formik
+      initialValues={initialValues}
+      onSubmit={async ({ rememberMe, ...values }) => {
+        const data: any = await signin(values);
+        const user = data?.socialUser;
+        console.log({ user });
+        if (user) {
+          localStorage.setItem("user", JSON.stringify(user));
+          router.push("/");
+        }
+      }}
+    >
+      {({ submitForm }) => {
         return (
           <Flex height="100vh" gap={6}>
             <Box
               flex="3"
-              bg={
-                'url("https://media.istockphoto.com/id/1321462048/photo/digital-transformation-concept-system-engineering-binary-code-programming.jpg?s=612x612&w=0&k=20&c=Ib8RLw3_eCOo9N3YE4pvp9rcb_WmirjS-9x9R-vTd68=")'
-              }
+              bg={'url("./cover/signin.jpg")'}
               backgroundSize="cover"
             />
-            <Flex flex="1" alignItems={"center"}>
+            <Flex flex="1" alignItems={"center"} p={5}>
               <div>
                 <Text fontSize={"3xl"}>Sign In</Text>
                 <Field name="email">
@@ -65,17 +82,20 @@ const SignIn = memo(() => {
                     </FormControl>
                   )}
                 </Field>
-                <Button colorScheme={"blue"} size="sm" mt={2}>
+                <Button
+                  colorScheme={"blue"}
+                  size="sm"
+                  mt={2}
+                  onClick={submitForm}
+                >
                   Sign In
                 </Button>
-                {/* <p className={styles.linkText}>
+                <Text fontSize="sm" mt={2}>
                   Haven&apos;t got an account?{" "}
                   <u>
-                    <Link className={styles.link} to="/signup">
-                      Sign up
-                    </Link>
+                    <Link href="/signup">Sign up</Link>
                   </u>
-                </p> */}
+                </Text>
               </div>
             </Flex>
           </Flex>
