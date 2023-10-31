@@ -1,10 +1,10 @@
 import service from "@/services";
 import { useQuery } from "@tanstack/react-query";
 
-export const useTimelinePosts = () => {
-  return useQuery(["GET_TIMELINE_INFO"], async () => {
+export const useNotifications = () => {
+  return useQuery(["GET_NOTIFICATIONS"], async () => {
     const { data } = await service({
-      url: "/user/timelinePosts",
+      url: "/user/notifications",
     });
     return data;
   });
