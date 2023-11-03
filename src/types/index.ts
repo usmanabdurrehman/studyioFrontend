@@ -1,4 +1,8 @@
-export interface Comment {
+interface Abstract {
+  _id: string;
+}
+
+export interface Comment extends Abstract {
   commenter: {
     profileImage: string;
     name: string;
@@ -6,7 +10,7 @@ export interface Comment {
   comment: string;
 }
 
-export interface Post {
+export interface Post extends Abstract {
   user: {
     profileImage: string;
     name: string;
@@ -19,7 +23,7 @@ export interface Post {
   comments: Comment[];
 }
 
-export interface User {
+export interface User extends Abstract {
   updatedAt?: Date;
   createdAt?: Date;
   email: string;

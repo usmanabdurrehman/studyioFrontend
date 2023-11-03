@@ -1,37 +1,59 @@
 "use client";
 
+import {
+  useDeletePost,
+  useHidePost,
+  useLikePost,
+  useUnhidePost,
+  useUnlikePost,
+} from "@/mutations";
 import { Post } from "@/types";
 import {
   Box,
-  Button,
   Flex,
   IconButton,
   Image,
-  Input,
   Menu,
   MenuButton,
   MenuItem,
   MenuList,
 } from "@chakra-ui/react";
-import React, { memo } from "react";
+import Link from "next/link";
+import React, { memo, useCallback } from "react";
 import { FaEllipsis, FaThumbsUp } from "react-icons/fa6";
 
-import { Comment } from "../Comment";
-
-import styles from "./PostCard.module.css";
+import { PostComments } from "../PostComments";
 
 interface PostCardProps {
   post: Post;
-  likePost: () => void;
-  unlikePost: () => void;
 }
 
-const showMore = true;
-const comment = "";
-const toggleShowMore = () => {};
+const PostCard = memo(({ post }: PostCardProps) => {
+  const { mutateAsync: likePost } = useLikePost();
+  const { mutateAsync: unlikePost } = useUnlikePost();
 
-const PostCard = memo(({ post, likePost, unlikePost }: PostCardProps) => {
-  const user: any = {};
+  const { mutateAsync: hidePost } = useHidePost();
+  const { mutateAsync: unhidePost } = useUnhidePost();
+
+  const { mutateAsync: deletePost } = useDeletePost();
+
+  const onLikePost = useCallback(async () => {
+    await likePost(post._id);
+  }, []);
+  const onUnlikePost = useCallback(async () => {
+    await unlikePost(post._id);
+  }, []);
+
+  const onDeletePost = useCallback(async () => {
+    await deletePost(post._id);
+  }, []);
+  const onHidePost = useCallback(async () => {
+    await hidePost(post._id);
+  }, []);
+
+  const onEditPost = useCallback(async () => {
+    await hidePost(post._id);
+  }, []);
 
   return (
     <Box
@@ -52,8 +74,7 @@ const PostCard = memo(({ post, likePost, unlikePost }: PostCardProps) => {
               alt="Profile"
             />
             <p>
-              {post?.user?.name}
-              {/* <Link to={`/profile/${post.userId}`}>{post?.user?.name}</Link> */}
+              <Link href={`/profile/${post.userId}`}>{post?.user?.name}</Link>
             </p>
           </Flex>
         </Box>
@@ -66,9 +87,9 @@ const PostCard = memo(({ post, likePost, unlikePost }: PostCardProps) => {
               size="xs"
             />
             <MenuList>
-              <MenuItem>Edit</MenuItem>
-              <MenuItem>Delete</MenuItem>
-              <MenuItem>Hide</MenuItem>
+              <MenuItem onClick={onEditPost}>Edit</MenuItem>
+              <MenuItem onClick={onDeletePost}>Delete</MenuItem>
+              <MenuItem onClick={onHidePost}>Hide</MenuItem>
             </MenuList>
           </Menu>
         </Box>
@@ -95,10 +116,10 @@ const PostCard = memo(({ post, likePost, unlikePost }: PostCardProps) => {
               icon={<FaThumbsUp />}
               color="inherit"
               onClick={() => {
-                if (post.liked === true) {
-                  unlikePost();
+                if (post.liked) {
+                  onUnlikePost();
                 } else {
-                  likePost();
+                  onLikePost();
                 }
               }}
               size="sm"
@@ -108,38 +129,7 @@ const PostCard = memo(({ post, likePost, unlikePost }: PostCardProps) => {
             {!!post.likes?.length && <p>{post.likes?.length}</p>}
           </Box>
           <Box flex="1">
-            <Input
-              borderColor="#007bff"
-              fontSize="xs"
-              size="sm"
-              width="100%"
-              borderWidth={1.4}
-              borderRadius="0 20px 20px 0"
-              onChange={() => {}}
-              value={comment}
-              placeholder="Comment..."
-            />
-            <Box mt={2}>
-              {post.comments &&
-                (showMore
-                  ? post.comments?.map((postComment) => (
-                      <Comment comment={postComment} />
-                    ))
-                  : post?.comments
-                      .slice(0, 2)
-                      .map((postComment) => <Comment comment={postComment} />))}
-            </Box>
-
-            {post.comments?.length > 2 && (
-              <Button size="xs" onClick={toggleShowMore}>
-                {showMore ? "Show Less" : "Show More"}
-              </Button>
-            )}
-          </Box>
-          <Box>
-            <Button type="submit" colorScheme={"blue"} size="sm">
-              Comment
-            </Button>
+            <PostComments post={post} />
           </Box>
         </Flex>
       </Box>

@@ -4,7 +4,6 @@ import { useSignup } from "../../mutations";
 import {
   Box,
   Button,
-  Checkbox,
   Flex,
   FormControl,
   FormErrorMessage,
@@ -14,9 +13,9 @@ import {
 } from "@chakra-ui/react";
 import { Field, FieldProps, Formik } from "formik";
 import React, { memo, useMemo } from "react";
-import { isRegularExpressionLiteral } from "typescript";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { buildFormikFormData } from "@/utils";
 
 interface SignupProps {}
 
@@ -39,7 +38,7 @@ const Signup = memo(({}: SignupProps) => {
     <Formik
       initialValues={initialValues}
       onSubmit={async (values) => {
-        await signup(values);
+        await signup(buildFormikFormData(values));
         router.push("/signin");
       }}
     >

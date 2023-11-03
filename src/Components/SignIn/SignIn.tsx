@@ -16,6 +16,7 @@ import { Field, FieldProps, Formik } from "formik";
 import React, { memo, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useUserStore } from "@/store";
 
 const SignIn = memo(() => {
   const initialValues = useMemo(
@@ -30,16 +31,16 @@ const SignIn = memo(() => {
   const { mutateAsync: signin } = useSignin();
   const router = useRouter();
 
+  const setUser = useUserStore((state) => state.setUser);
   return (
     <Formik
       initialValues={initialValues}
       onSubmit={async ({ rememberMe, ...values }) => {
-        const data: any = await signin(values);
-        const user = data?.socialUser;
-        console.log({ user });
-        if (user) {
-          localStorage.setItem("user", JSON.stringify(user));
-          router.push("/");
+        const data = await signin(values);
+        console.log({ data });
+        if (data?.user) {
+          setUser(data?.user);
+          router.push("/timeline");
         }
       }}
     >
