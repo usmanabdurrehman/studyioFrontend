@@ -18,7 +18,8 @@ import PostCardSkeleton from "../PostCardSkeleton/PostCardSkeleton";
 const IMAGE_SIZE = 150;
 
 const Profile = memo(({ userId }: { userId: string }) => {
-  const { data: profileInfo } = useProfileInfo(userId);
+  const { data: profileInfo, refetch: refetchProfileInfo } =
+    useProfileInfo(userId);
 
   const user = useUserStore((state) => state.user);
   const loggedUserId = user?._id;
@@ -43,12 +44,16 @@ const Profile = memo(({ userId }: { userId: string }) => {
   const { mutateAsync: follow } = useFollowPerson();
   const { mutateAsync: unfollow } = useUnfollowPerson();
 
-  const onUnfollow = useCallback(() => {
-    unfollow(userId);
+  const onUnfollow = useCallback(async () => {
+    await unfollow(userId);
+    refetchProfileInfo();
   }, []);
-  const onFollow = useCallback(() => {
-    follow(userId);
+  const onFollow = useCallback(async () => {
+    await follow(userId);
+    refetchProfileInfo();
   }, []);
+
+  const isFollowing = !!profileInfo?.user?.isFollowing;
 
   return (
     <Box p={4}>
@@ -103,12 +108,11 @@ const Profile = memo(({ userId }: { userId: string }) => {
           <IconButton
             aria-label="follow/unfollow"
             pos={"absolute"}
-            bottom={2}
-            right={2}
-            icon={
-              profileInfo?.user.isFollowing ? <FaUserSlash /> : <FaUserPlus />
-            }
-            onClick={profileInfo?.user.isFollowing ? onUnfollow : onFollow}
+            bottom={1}
+            right={1}
+            colorScheme={isFollowing ? "whatsapp" : "linkedin"}
+            icon={isFollowing ? <FaUserSlash /> : <FaUserPlus />}
+            onClick={isFollowing ? onUnfollow : onFollow}
           />
         </div>
       )}

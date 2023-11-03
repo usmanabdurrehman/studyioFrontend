@@ -1,64 +1,87 @@
 "use client";
 
-import React, { memo } from "react";
+import React, { memo, useCallback, useMemo } from "react";
 
 import { Editor } from "@tinymce/tinymce-react";
 
-import { ChangeEvent } from "react";
-import { Box, Button, Flex, IconButton, Input } from "@chakra-ui/react";
+import { Box, Button, Flex } from "@chakra-ui/react";
 import { FaImage, FaPaperclip, FaXmark } from "react-icons/fa6";
 import { FileUpload } from "../FileUpload";
+import { Formik, FormikHelpers } from "formik";
+import { useAddPost, useEditPost } from "@/mutations";
+import { Post } from "@/types";
+import { buildFormikFormData } from "@/utils";
 
 interface AddPostCardProps {
-  post: any;
-  postText: string;
-  addPost: (e: React.SyntheticEvent) => void;
-  editPost: (e: React.SyntheticEvent) => void;
-  images: File[];
-  onFileChange: (event: ChangeEvent<HTMLInputElement>) => void;
-  onTextChange: (text: string) => void;
-  onImageChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  post?: Post;
 }
 
-export const AddPostCard = memo(
-  ({
-    post,
-    postText,
-    addPost,
-    editPost,
-    images,
-    onFileChange,
-    onTextChange,
-    onImageChange,
-  }: // onCloseImageClick,
-  // onCloseFileClick,
-  AddPostCardProps) => (
-    <Box width={"100%"} background="white" boxShadow={"md"}>
-      <Flex
-        color="white"
-        background={"#007bff"}
-        alignItems="center"
-        justifyContent={"space-between"}
-        p={2}
-      >
-        <Box>{post ? "Edit Post" : "New Post"}</Box>
-        <Flex gap={2}>
-          <FileUpload
-            icon={<FaImage />}
-            ariaLabel="Attach Images"
-            onChange={onImageChange}
-            accept=".jpg,.png"
-          />
-          <FileUpload
-            icon={<FaPaperclip />}
-            ariaLabel="Attach Documents"
-            onChange={onFileChange}
-          />
-        </Flex>
-      </Flex>
-      <Box p={2}>
-        <form onSubmit={post ? editPost : addPost}>
-          <div>
+type AddPostValues = {
+  images: any[];
+  text: string;
+  files: any[];
+};
+
+export const AddPostCard = memo(({ post }: AddPostCardProps) => {
+  const { mutateAsync: addPost } = useAddPost();
+  const { mutateAsync: editPost } = useEditPost();
+
+  const initialValues: AddPostValues = useMemo(() => {
+    return { images: [], text: post?.postText || "", files: [] };
+  }, []);
+
+  const onSubmit = useCallback(
+    async (
+      values: AddPostValues,
+      { resetForm }: FormikHelpers<AddPostValues>
+    ) => {
+      if (post) {
+        await editPost(buildFormikFormData(values));
+      } else {
+        await addPost(buildFormikFormData(values));
+      }
+      resetForm();
+    },
+    []
+  );
+
+  return (
+    <Formik initialValues={initialValues} onSubmit={onSubmit}>
+      {({ values, setFieldValue }) => (
+        <Box width={"100%"} background="white" boxShadow={"md"}>
+          <Flex
+            color="white"
+            background={"#007bff"}
+            alignItems="center"
+            justifyContent={"space-between"}
+            p={2}
+          >
+            <Box>{post ? "Edit Post" : "New Post"}</Box>
+            <Flex gap={2}>
+              <FileUpload
+                icon={<FaImage />}
+                ariaLabel="Attach Images"
+                onChange={(e) => {
+                  setFieldValue("images", [
+                    ...values.images,
+                    ...((e.target.files || []) as FileList[]),
+                  ]);
+                }}
+                accept=".jpg,.png"
+              />
+              <FileUpload
+                icon={<FaPaperclip />}
+                ariaLabel="Attach Documents"
+                onChange={(e) => {
+                  setFieldValue("files", [
+                    ...values.files,
+                    ...((e.target.files || []) as FileList[]),
+                  ]);
+                }}
+              />
+            </Flex>
+          </Flex>
+          <Box p={2}>
             <Editor
               apiKey="mr7s25j95m3vnm6e6bty7baeo74sc83zmll44tbxcpl959ou"
               init={{
@@ -68,39 +91,35 @@ export const AddPostCard = memo(
                 menubar: false,
                 resize: false,
               }}
-              value={postText}
-              onEditorChange={onTextChange}
+              value={values.text}
+              onEditorChange={(text) => setFieldValue("text", text)}
             />
-          </div>
-          {images && (
-            <div>
-              {images.map((image) => (
-                <div>
-                  <img
-                    src={
-                      typeof image === "string"
-                        ? image
-                        : URL.createObjectURL(image)
-                    }
-                    alt="Post"
-                  />
-                  <IconButton
-                    icon={<FaXmark />}
-                    aria-label="Remove Image"
-                    // onClick={() => onCloseImageClick(image?.name || image)}
-                    size="xs"
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-          <Flex mt={4} justifyContent="flex-end">
-            <Button type="submit" colorScheme={"blue"} size="sm">
-              {post ? "Update" : "Add Post"}
-            </Button>
-          </Flex>
-        </form>
-      </Box>
-    </Box>
-  )
-);
+            {values.images && (
+              <Flex gap={1} flexWrap="wrap">
+                {values.images.map((image) => (
+                  <Box>
+                    <img
+                      src={
+                        typeof image === "string"
+                          ? image
+                          : URL.createObjectURL(image)
+                      }
+                      width={30}
+                      height={30}
+                      alt="Post"
+                    />
+                  </Box>
+                ))}
+              </Flex>
+            )}
+            <Flex mt={4} justifyContent="flex-end">
+              <Button type="submit" colorScheme={"blue"} size="sm">
+                {post ? "Update" : "Add Post"}
+              </Button>
+            </Flex>
+          </Box>
+        </Box>
+      )}
+    </Formik>
+  );
+});

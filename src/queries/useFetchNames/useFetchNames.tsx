@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 export const useFetchNames = (name: string) => {
   return useQuery(
     ["GET_FETCH_NAMES", name],
-    async () => {
+    async (): Promise<{ _id: string; name: string }[]> => {
       const { data } = await service({
         url: "/user/fetchNames",
         method: "post",
@@ -14,6 +14,9 @@ export const useFetchNames = (name: string) => {
     },
     {
       enabled: !!name,
+      meta: {
+        skipGlobalLoader: true,
+      },
     }
   );
 };

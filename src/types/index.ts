@@ -29,8 +29,7 @@ export interface User extends Abstract {
   email: string;
   password: string;
   bio?: string;
-  firstName: string;
-  lastName: string;
+  name: string;
   posts?: Post[];
 }
 

@@ -1,6 +1,11 @@
+import { Layout } from "@/Components/Layout";
 import Profile from "@/Components/Profile/Profile";
 import React from "react";
 
 export default function ProfilePage({ params }: { params: { id: string } }) {
-  return <Profile userId={params?.id} />;
+  return (
+    <Layout>
+      <Profile userId={params?.id} />
+    </Layout>
+  );
 }
