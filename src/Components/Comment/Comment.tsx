@@ -27,7 +27,6 @@ const Comment = memo(({ comment }: CommentProps) => (
         <Text fontSize="xs">{comment?.comment}</Text>
       </Box>
     </Flex>
-    <Divider m={"2px 0"} />
   </Box>
 ));
 

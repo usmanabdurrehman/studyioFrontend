@@ -23,7 +23,13 @@ const Timeline = memo(() => {
           </p>
         );
       }
-      return posts.map((post: Post) => <PostCard post={post} />);
+      return (
+        <Flex direction="column" gap={4}>
+          {posts.map((post: Post) => (
+            <PostCard post={post} />
+          ))}
+        </Flex>
+      );
     }
     return Array(3)
       .fill("-")

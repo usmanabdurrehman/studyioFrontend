@@ -1,6 +1,7 @@
 import { useAddComment } from "@/mutations";
+import { useProfileInfo, useTimelinePosts } from "@/queries";
 import { Post } from "@/types";
-import { Box, Button, Input } from "@chakra-ui/react";
+import { Box, Button, Divider, Input } from "@chakra-ui/react";
 import { Field, FieldProps, Formik } from "formik";
 import React, { useState } from "react";
 
@@ -10,14 +11,22 @@ export default function PostComments({ post }: { post: Post }) {
   const [showMore, setShowMore] = useState(false);
   const { mutateAsync: addComment } = useAddComment();
 
+  const { refetch: refetchTimeline } = useTimelinePosts();
+  const { refetch: refetchProfileInfo } = useProfileInfo();
+
+  const postComments = showMore ? post.comments : post?.comments.slice(0, 2);
+
   return (
     <Formik
       initialValues={{ comment: "" }}
-      onSubmit={async (values) => {
+      onSubmit={async (values, { resetForm }) => {
         await addComment({ comment: values.comment, postId: post._id });
+        refetchTimeline();
+        refetchProfileInfo();
+        resetForm();
       }}
     >
-      {() => (
+      {({ submitForm }) => (
         <Box>
           <Box flex="1">
             <Field name="comment">
@@ -35,14 +44,14 @@ export default function PostComments({ post }: { post: Post }) {
               )}
             </Field>
             <Box mt={2}>
-              {post.comments &&
-                (showMore
-                  ? post.comments?.map((postComment) => (
-                      <Comment comment={postComment} />
-                    ))
-                  : post?.comments
-                      .slice(0, 2)
-                      .map((postComment) => <Comment comment={postComment} />))}
+              {postComments.map((postComment, index) => (
+                <Box mt={2} mb={2}>
+                  <Comment comment={postComment} />
+                  {index !== postComments?.length - 1 && (
+                    <Divider m={"2px 0"} />
+                  )}
+                </Box>
+              ))}
             </Box>
 
             {post.comments?.length > 2 && (
@@ -52,7 +61,7 @@ export default function PostComments({ post }: { post: Post }) {
             )}
           </Box>
           <Box>
-            <Button type="submit" colorScheme={"blue"} size="sm">
+            <Button colorScheme={"blue"} size="sm" onClick={submitForm}>
               Comment
             </Button>
           </Box>

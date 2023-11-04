@@ -7,6 +7,7 @@ import {
   useUnhidePost,
   useUnlikePost,
 } from "@/mutations";
+import { useProfileInfo, useTimelinePosts } from "@/queries";
 import { Post } from "@/types";
 import {
   Box,
@@ -37,23 +38,35 @@ const PostCard = memo(({ post }: PostCardProps) => {
 
   const { mutateAsync: deletePost } = useDeletePost();
 
+  const { refetch: refetchTimeline } = useTimelinePosts();
+  const { refetch: refetchProfileInfo } = useProfileInfo();
+
+  const updatePostsInfo = useCallback(() => {
+    refetchTimeline();
+    refetchProfileInfo();
+  }, []);
+
   const onLikePost = useCallback(async () => {
     await likePost(post._id);
+    updatePostsInfo();
   }, []);
+
   const onUnlikePost = useCallback(async () => {
     await unlikePost(post._id);
+    updatePostsInfo();
   }, []);
 
   const onDeletePost = useCallback(async () => {
     await deletePost(post._id);
-  }, []);
-  const onHidePost = useCallback(async () => {
-    await hidePost(post._id);
+    updatePostsInfo();
   }, []);
 
-  const onEditPost = useCallback(async () => {
+  const onHidePost = useCallback(async () => {
     await hidePost(post._id);
+    updatePostsInfo();
   }, []);
+
+  const onEditPost = useCallback(async () => {}, []);
 
   return (
     <Box
@@ -94,14 +107,16 @@ const PostCard = memo(({ post }: PostCardProps) => {
           </Menu>
         </Box>
       </Flex>
-      <Box
-        mt={5}
-        dangerouslySetInnerHTML={{
-          __html: post.postText,
-        }} /* eslint react/no-danger: 0 */
-      />
-      {post.images && (
-        <Flex gap={2} wrap="wrap">
+      {post.postText && (
+        <Box
+          mt={5}
+          dangerouslySetInnerHTML={{
+            __html: post.postText,
+          }} /* eslint react/no-danger: 0 */
+        />
+      )}
+      {!!post.images?.length && (
+        <Flex gap={2} wrap="wrap" mt={4}>
           {post.images.map((image) => (
             <Box>
               <Image src={image} alt="Image" width="100%" />
@@ -112,22 +127,25 @@ const PostCard = memo(({ post }: PostCardProps) => {
       <Box mt={5}>
         <Flex alignItems={"flexStart"} gap={4} width="100%">
           <Box>
-            <IconButton
-              icon={<FaThumbsUp />}
-              color="inherit"
-              onClick={() => {
-                if (post.liked) {
-                  onUnlikePost();
-                } else {
-                  onLikePost();
-                }
-              }}
-              size="sm"
-              aria-label="Like Post"
-            />
+            <Flex alignItems={"center"} gap={2}>
+              <IconButton
+                icon={<FaThumbsUp />}
+                color={post.liked ? "blue" : "inherit"}
+                onClick={() => {
+                  if (post.liked) {
+                    onUnlikePost();
+                  } else {
+                    onLikePost();
+                  }
+                }}
+                size="sm"
+                aria-label="Like Post"
+              />
 
-            {!!post.likes?.length && <p>{post.likes?.length}</p>}
+              {!!post.likes?.length && <p>{post.likes?.length}</p>}
+            </Flex>
           </Box>
+
           <Box flex="1">
             <PostComments post={post} />
           </Box>
