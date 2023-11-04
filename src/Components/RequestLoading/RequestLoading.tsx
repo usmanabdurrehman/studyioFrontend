@@ -19,7 +19,7 @@ export const RequestLoading = () => {
         background: "#eee",
         height: "100vh",
         width: "100vw",
-        zIndex: 1000,
+        zIndex: 100000,
         position: "fixed",
         opacity: "0.8",
         display: "flex",

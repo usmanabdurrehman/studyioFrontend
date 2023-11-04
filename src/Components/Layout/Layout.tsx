@@ -1,16 +1,20 @@
 "use client";
 
-import { Box, Container } from "@chakra-ui/react";
+import { Box, Container, Flex } from "@chakra-ui/react";
 import React from "react";
+import { Footer } from "../Footer";
 import { Navbar } from "../Navbar/Navbar";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <Box>
+    <Flex minHeight={"100vh"} direction={"column"} height="100%">
       <Navbar />
-      <Container maxW="1360">
-        <Box mt={4}>{children}</Box>
+      <Container flex="1" maxW="1360">
+        <Box mt={4} mb={4}>
+          {children}
+        </Box>
       </Container>
-    </Box>
+      <Footer />
+    </Flex>
   );
 }

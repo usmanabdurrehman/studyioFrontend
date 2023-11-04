@@ -6,7 +6,7 @@ const Footer = memo(() => (
     p={4}
     alignItems="center"
     justifyContent={"center"}
-    bg="blue"
+    bg="#000036"
     color="white"
   >
     Study.io, Copyright 2021

@@ -1,5 +1,6 @@
 "use client";
 
+import { useLogout } from "@/mutations/useLogout";
 import { useFetchNames } from "@/queries";
 import { useUserStore } from "@/store";
 import {
@@ -24,6 +25,8 @@ import { useRef, useState } from "react";
 
 import { FaEllipsis, FaCircleXmark } from "react-icons/fa6";
 
+import { useRouter } from "next/navigation";
+
 export const Navbar = () => {
   const user = useUserStore((state) => state.user);
 
@@ -31,12 +34,14 @@ export const Navbar = () => {
 
   const { data: names = [], isFetching } = useFetchNames(search);
 
-  console.log({ user });
+  const { mutateAsync: logout } = useLogout();
 
   const initialFocusRef = useRef(null);
 
+  const router = useRouter();
+
   return (
-    <Box bg="blue.400" h={"70px"} color="white">
+    <Box bg="#000036" h={"70px"} color="white">
       <Container maxW="1360" h="100%">
         <Flex h="100%" alignItems={"center"} justifyContent={"space-between"}>
           <Box>
@@ -81,6 +86,14 @@ export const Navbar = () => {
           <Flex alignItems={"center"} gap={4}>
             <Link href="/timeline">Timeline</Link>
             <Link href={`/profile/${user?._id}`}>{user?.name}'s Profile</Link>
+            <p
+              onClick={async () => {
+                await logout();
+                router.push("/signin");
+              }}
+            >
+              Logout
+            </p>
           </Flex>
         </Flex>
       </Container>

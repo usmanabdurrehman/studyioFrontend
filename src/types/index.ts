@@ -10,6 +10,8 @@ export interface Comment extends Abstract {
   comment: string;
 }
 
+export type Attachment = { filename: string; originalFilename: string };
+
 export interface Post extends Abstract {
   user: {
     profileImage: string;
@@ -21,6 +23,7 @@ export interface Post extends Abstract {
   likes: string[];
   liked: boolean;
   comments: Comment[];
+  files: Attachment[];
 }
 
 export interface User extends Abstract {
