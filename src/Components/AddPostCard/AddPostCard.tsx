@@ -152,7 +152,7 @@ export const AddPostCard = memo(
               </Flex>
               <Box p={2}>
                 <Editor
-                  apiKey="mr7s25j95m3vnm6e6bty7baeo74sc83zmll44tbxcpl959ou"
+                  apiKey={process.env.NEXT_PUBLIC_TINY_MCE_EDITOR_API_KEY}
                   init={{
                     plugins: "emoticons",
                     toolbar: "emoticons",

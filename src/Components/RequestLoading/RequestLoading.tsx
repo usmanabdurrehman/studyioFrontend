@@ -1,4 +1,5 @@
 import { useIsFetching, useIsMutating } from "@tanstack/react-query";
+import LoadingIndicator from "../LoadingIndicator/LoadingIndicator";
 
 export const RequestLoading = () => {
   const isFetching = useIsFetching({
@@ -13,21 +14,5 @@ export const RequestLoading = () => {
     return null;
   }
 
-  return (
-    <div
-      style={{
-        background: "#eee",
-        height: "100vh",
-        width: "100vw",
-        zIndex: 100000,
-        position: "fixed",
-        opacity: "0.8",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <img src="/HourGlass.gif" height={100} width={100} />
-    </div>
-  );
+  return <LoadingIndicator />;
 };

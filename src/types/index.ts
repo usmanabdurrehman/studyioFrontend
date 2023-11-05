@@ -34,6 +34,21 @@ export interface User extends Abstract {
   bio?: string;
   name: string;
   posts?: Post[];
+  profileImage: string;
 }
 
 export type UserCreds = Pick<User, "email" | "password">;
+
+export enum NotificationAction {
+  Followed = "followed",
+  Commented = "commented",
+  Liked = "liked",
+}
+
+export interface Notification extends Abstract {
+  action: NotificationAction;
+  doerId: string;
+  message: string;
+  postId: string;
+  profileImage: string;
+}

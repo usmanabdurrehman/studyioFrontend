@@ -1,15 +1,21 @@
 "use client";
 
 import { useLogout } from "@/mutations/useLogout";
-import { useFetchNames } from "@/queries";
+import {
+  useFetchNames,
+  useNotifications,
+  useUnseenNotificationCount,
+} from "@/queries";
 import { useUserStore } from "@/store";
 import {
+  Avatar,
+  AvatarBadge,
   Box,
+  Button,
   Container,
   Flex,
+  IconButton,
   Input,
-  InputGroup,
-  InputRightAddon,
   Menu,
   MenuButton,
   MenuItem,
@@ -21,11 +27,13 @@ import {
   Text,
 } from "@chakra-ui/react";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
-import { FaEllipsis, FaCircleXmark } from "react-icons/fa6";
+import { FaEllipsis, FaCircleXmark, FaBell } from "react-icons/fa6";
 
 import { useRouter } from "next/navigation";
+import { useSeeNotifications } from "@/mutations";
+import { NotificationAction } from "@/types";
 
 export const Navbar = () => {
   const user = useUserStore((state) => state.user);
@@ -33,6 +41,13 @@ export const Navbar = () => {
   const [search, setSearch] = useState("");
 
   const { data: names = [], isFetching } = useFetchNames(search);
+  const { data: notifications = [], refetch: refetchNotifications } =
+    useNotifications();
+
+  const { data: unseenNotificationCount, refetch: refetchUnseenNotifications } =
+    useUnseenNotificationCount();
+
+  const { mutateAsync: seeNotifications } = useSeeNotifications();
 
   const { mutateAsync: logout } = useLogout();
 
@@ -40,13 +55,27 @@ export const Navbar = () => {
 
   const router = useRouter();
 
+  const onNotificationClick = useCallback(async () => {
+    refetchNotifications();
+    await seeNotifications();
+    refetchUnseenNotifications();
+  }, []);
+
+  const navigateToProfilePage = useCallback((doerId: string) => {
+    router.push(`/profile/${doerId}`);
+  }, []);
+
+  const navigateToPostPage = useCallback((postId: string) => {
+    router.push(`/post/${postId}`);
+  }, []);
+
   return (
     <Box bg="#000036" h={"70px"} color="white">
       <Container maxW="1360" h="100%">
         <Flex h="100%" alignItems={"center"} justifyContent={"space-between"}>
           <Box>
             <Flex alignItems={"center"} gap={4}>
-              <Text fontWeight={"bold"}>
+              <Text fontWeight={"bold"} fontSize="lg">
                 <Link href="/timeline">Study.io</Link>
               </Text>
               <Popover
@@ -54,28 +83,40 @@ export const Navbar = () => {
                 closeOnBlur={false}
                 isOpen={!!(names?.length && search)}
                 initialFocusRef={initialFocusRef}
+                onClose={() => setSearch("")}
+                closeOnEsc
               >
                 <PopoverTrigger>
-                  <InputGroup>
+                  <Box pos={"relative"}>
                     <Input
                       placeholder="Search Users..."
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
                       ref={initialFocusRef}
-                      _placeholder={{ color: "inherit" }}
+                      _placeholder={{ color: "inherit", fontSize: "xs" }}
+                      fontSize="xs"
+                      rounded={"full"}
+                      pr={10}
                     />
-                    <InputRightAddon>
-                      <Box width={3}>
+                    {isFetching && (
+                      <Flex
+                        height="100%"
+                        alignItems={"center"}
+                        justifyContent="center"
+                        pos={"absolute"}
+                        top={0}
+                        right={3}
+                      >
                         {isFetching && <Spinner size="sm" color="blue.500" />}
-                      </Box>
-                    </InputRightAddon>
-                  </InputGroup>
+                      </Flex>
+                    )}
+                  </Box>
                 </PopoverTrigger>
                 <PopoverContent>
                   <Flex direction={"column"} gap={2} color="black" p={2}>
                     {names?.map(({ name, _id }) => (
                       <Link color="black" href={`/profile/${_id}`}>
-                        {name}
+                        <Text fontSize="xs">{name}</Text>
                       </Link>
                     ))}
                   </Flex>
@@ -84,16 +125,54 @@ export const Navbar = () => {
             </Flex>
           </Box>
           <Flex alignItems={"center"} gap={4}>
-            <Link href="/timeline">Timeline</Link>
-            <Link href={`/profile/${user?._id}`}>{user?.name}'s Profile</Link>
-            <p
+            <Link href="/timeline">
+              <Text fontSize="sm">Timeline</Text>
+            </Link>
+            <Link href={`/profile/${user?._id}`}>
+              <Avatar src={user?.profileImage} size="xs" name={user?.name} />
+            </Link>
+            <Menu>
+              <MenuButton
+                onClick={onNotificationClick}
+                as={IconButton}
+                icon={
+                  <>
+                    <Avatar icon={<FaBell />} size="xs">
+                      {!!unseenNotificationCount && (
+                        <AvatarBadge boxSize="1.25em" bg="green.500" />
+                      )}
+                    </Avatar>
+                  </>
+                }
+                rounded={"full"}
+                colorScheme="gray"
+                size="xs"
+              />
+              <MenuList color="black">
+                {notifications.map(({ message, action, postId, doerId }) => (
+                  <MenuItem
+                    fontSize={"xs"}
+                    onClick={() => {
+                      action === NotificationAction.Followed
+                        ? navigateToProfilePage(doerId)
+                        : navigateToPostPage(postId);
+                    }}
+                  >
+                    {message}
+                  </MenuItem>
+                ))}
+              </MenuList>
+            </Menu>
+
+            <Button
               onClick={async () => {
                 await logout();
                 router.push("/signin");
               }}
+              size="xs"
             >
               Logout
-            </p>
+            </Button>
           </Flex>
         </Flex>
       </Container>

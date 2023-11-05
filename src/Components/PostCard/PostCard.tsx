@@ -7,7 +7,7 @@ import {
   useUnhidePost,
   useUnlikePost,
 } from "@/mutations";
-import { useProfileInfo, useTimelinePosts } from "@/queries";
+import { usePostById, useProfileInfo, useTimelinePosts } from "@/queries";
 import { Post } from "@/types";
 import {
   Box,
@@ -25,10 +25,10 @@ import {
   ModalOverlay,
 } from "@chakra-ui/react";
 import Link from "next/link";
-import React, { memo, useCallback, useState } from "react";
+import React, { memo, useCallback, useMemo, useState } from "react";
 import { FaEllipsis, FaThumbsUp } from "react-icons/fa6";
 import { AddPostCard } from "../AddPostCard";
-import { FileIcon, defaultStyles } from "react-file-icon";
+import { FileIcon, defaultStyles, DefaultExtensionType } from "react-file-icon";
 
 import { PostComments } from "../PostComments";
 
@@ -141,11 +141,13 @@ const PostCard = memo(({ post }: PostCardProps) => {
         {!!post.files?.length && (
           <Flex gap={2} wrap="wrap" mt={4}>
             {post.files.map((attachment) => {
-              const ext = attachment?.filename?.split(".").at(-1);
+              const ext = attachment?.filename
+                ?.split(".")
+                .at(-1) as DefaultExtensionType;
 
               return (
                 <Box width={12} height={12}>
-                  <FileIcon extension={ext} {...defaultStyles[ext]} className />
+                  <FileIcon extension={ext} {...defaultStyles[ext]} />
                 </Box>
               );
             })}
