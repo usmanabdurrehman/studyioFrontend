@@ -13,45 +13,62 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Field, FieldProps, Formik } from "formik";
-import React, { memo, useMemo } from "react";
+import React, { memo, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { buildFormikFormData } from "@/utils";
 import { useProgressRouter } from "@/hooks";
+import * as Yup from "yup";
 
 interface SignupProps {}
 
-const Signup = memo(({}: SignupProps) => {
-  const initialValues = useMemo(
-    () => ({
-      firstName: "",
-      lastName: "",
-      email: "",
-      password: "",
-    }),
-    []
-  );
+type SignupForm = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+};
 
+const initialValues: SignupForm = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  password: "",
+};
+
+const SignUpSchema = Yup.object().shape({
+  firstName: Yup.string().required("The first name is required"),
+  email: Yup.string().required("The email is required"),
+  password: Yup.string().required("The password is required"),
+});
+
+const Signup = memo(({}: SignupProps) => {
   const router = useProgressRouter();
 
   const { mutateAsync: signup, isLoading } = useSignup();
 
+  const onSubmit = useCallback(
+    async (values: SignupForm) => {
+      const data = await signup(buildFormikFormData(values));
+      if (data?.status) router.push("/signin");
+    },
+    [signup, router]
+  );
+
   return (
     <Formik
       initialValues={initialValues}
-      onSubmit={async (values) => {
-        await signup(buildFormikFormData(values));
-        router.push("/signin");
-      }}
+      onSubmit={onSubmit}
+      validationSchema={SignUpSchema}
     >
       {({ submitForm }) => {
         return (
           <Flex height="100vh" gap={6}>
-            <Flex flex="1" alignItems={"center"} p={5}>
+            <Flex width={300} alignItems={"center"} p={5}>
               <div>
                 <Text fontSize={"3xl"}>Sign Up</Text>
                 <Field name="firstName">
                   {({ field, meta }: FieldProps) => (
-                    <FormControl isInvalid={!!meta.error}>
+                    <FormControl isInvalid={!!meta.error} isRequired>
                       <FormLabel>First Name</FormLabel>
                       <Input {...field} />
                       <FormErrorMessage>{meta.error}</FormErrorMessage>
@@ -71,7 +88,7 @@ const Signup = memo(({}: SignupProps) => {
 
                 <Field name="email">
                   {({ field, meta }: FieldProps) => (
-                    <FormControl isInvalid={!!meta.error}>
+                    <FormControl isInvalid={!!meta.error} isRequired>
                       <FormLabel>Email</FormLabel>
                       <Input {...field} />
                       <FormErrorMessage>{meta.error}</FormErrorMessage>
@@ -81,7 +98,7 @@ const Signup = memo(({}: SignupProps) => {
 
                 <Field name="password">
                   {({ field, meta }: FieldProps) => (
-                    <FormControl isInvalid={!!meta.error}>
+                    <FormControl isInvalid={!!meta.error} isRequired>
                       <FormLabel>Password</FormLabel>
                       <Input type="password" {...field} />
                       <FormErrorMessage>{meta.error}</FormErrorMessage>
@@ -93,6 +110,7 @@ const Signup = memo(({}: SignupProps) => {
                   size="sm"
                   mt={4}
                   onClick={submitForm}
+                  width="80px"
                 >
                   {isLoading ? <Spinner size="xs" /> : "Sign up"}
                 </Button>
@@ -105,7 +123,7 @@ const Signup = memo(({}: SignupProps) => {
               </div>
             </Flex>
             <Box
-              flex="3"
+              flex="1"
               bg={'url("./cover/signup.jpg")'}
               backgroundSize="cover"
             />

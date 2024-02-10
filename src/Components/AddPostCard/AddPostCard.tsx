@@ -4,7 +4,15 @@ import React, { memo, useCallback, useMemo } from "react";
 
 import { Editor } from "@tinymce/tinymce-react";
 
-import { Box, Button, Flex, Icon, IconButton } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  Icon,
+  IconButton,
+  Image,
+  Spinner,
+} from "@chakra-ui/react";
 import { FileUpload } from "../FileUpload";
 import { Formik, FormikHelpers } from "formik";
 import { useAddPost, useEditPost } from "@/mutations";
@@ -17,7 +25,7 @@ import {
   FileIconProps,
   DefaultExtensionType,
 } from "react-file-icon";
-import { CardImage, Paperclip, XLg } from "react-bootstrap-icons";
+import { CardImage, Paperclip, X, XLg } from "react-bootstrap-icons";
 
 interface AddPostCardProps {
   post?: Post;
@@ -32,8 +40,9 @@ type AddPostValues = {
 
 export const AddPostCard = memo(
   ({ post, onSubmit: handleSubmit }: AddPostCardProps) => {
-    const { mutateAsync: addPost } = useAddPost();
-    const { mutateAsync: editPost } = useEditPost();
+    const { mutateAsync: addPost, isLoading: isAddPostLoading } = useAddPost();
+    const { mutateAsync: editPost, isLoading: isEditPostLoading } =
+      useEditPost();
 
     const { refetch: refetchTimeline } = useTimelinePosts();
     const { refetch: refetchProfileInfo } = useProfileInfo();
@@ -147,6 +156,7 @@ export const AddPostCard = memo(
                 <Editor
                   apiKey={process.env.NEXT_PUBLIC_TINY_MCE_EDITOR_API_KEY}
                   init={{
+                    height: 220,
                     plugins: "emoticons",
                     toolbar: "emoticons",
                     toolbar_location: "bottom",
@@ -158,17 +168,17 @@ export const AddPostCard = memo(
                 />
 
                 {values.images && (
-                  <Flex gap={1} flexWrap="wrap" mt={2}>
+                  <Flex gap={1} flexWrap="wrap" mt={4}>
                     {values.images.map((image) => (
                       <Box data-group pos="relative">
-                        <img
+                        <Image
                           src={
                             typeof image === "string"
                               ? image
                               : URL.createObjectURL(image)
                           }
-                          width={60}
-                          height={60}
+                          width={10}
+                          height={10}
                           alt="Image"
                         />
                         <IconButton
@@ -186,20 +196,20 @@ export const AddPostCard = memo(
                               )
                             )
                           }
-                          top={1}
-                          right={1}
+                          top={0}
+                          right={0}
                           visibility="hidden"
                           _groupHover={{ visibility: "visible !important" }}
                           aria-label="Remove Image"
-                          size="xs"
-                          icon={<XLg />}
+                          size="xxs"
+                          icon={<X />}
                         />
                       </Box>
                     ))}
                   </Flex>
                 )}
                 {values.attachments && (
-                  <Flex gap={1} flexWrap="wrap" mt={2}>
+                  <Flex gap={1} flexWrap="wrap" mt={4}>
                     {values.attachments.map((attachment) => {
                       const ext = (
                         attachment instanceof File
@@ -210,7 +220,7 @@ export const AddPostCard = memo(
                         .at(-1) as DefaultExtensionType;
                       return (
                         <Box data-group pos="relative">
-                          <Box width={12} height={12}>
+                          <Box width={10} height={10}>
                             <FileIcon extension={ext} {...defaultStyles[ext]} />
                           </Box>
 
@@ -231,13 +241,13 @@ export const AddPostCard = memo(
                                 )
                               )
                             }
-                            top={1}
-                            right={1}
+                            top={0}
+                            right={0}
                             visibility="hidden"
                             _groupHover={{ visibility: "visible !important" }}
-                            aria-label="Remove Image"
-                            size="xs"
-                            icon={<XLg />}
+                            aria-label="Remove Attachment"
+                            size="xxs"
+                            icon={<X />}
                           />
                         </Box>
                       );
@@ -256,8 +266,15 @@ export const AddPostCard = memo(
                     colorScheme={"blue"}
                     size="sm"
                     onClick={submitForm}
+                    width="90px"
                   >
-                    {post ? "Update" : "Add Post"}
+                    {isAddPostLoading || isEditPostLoading ? (
+                      <Spinner size="xs" />
+                    ) : post ? (
+                      "Update"
+                    ) : (
+                      "Add Post"
+                    )}
                   </Button>
                 </Flex>
               </Box>

@@ -21,11 +21,13 @@ const PostContent = () => {
   const { data: posts } = useTimelinePosts();
   const [showHiddenPosts, setShowHiddenPosts] = useState(false);
 
+  console.log({ posts });
+
   const filteredPosts = useMemo(
     () =>
       (posts || []).filter((post) => {
         if (showHiddenPosts) return true;
-        return post.hidden;
+        return !post.hidden;
       }),
     [posts, showHiddenPosts]
   );

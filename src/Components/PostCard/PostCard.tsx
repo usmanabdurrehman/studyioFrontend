@@ -25,14 +25,21 @@ import {
   ModalOverlay,
 } from "@chakra-ui/react";
 import Link from "next/link";
-import React, { memo, useCallback, useMemo, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import { AddPostCard } from "../AddPostCard";
 import { FileIcon, defaultStyles, DefaultExtensionType } from "react-file-icon";
 
 import { PostComments } from "../PostComments";
 import { usePathname } from "next/navigation";
-import { GripHorizontal, HandThumbsUp, ThreeDots } from "react-bootstrap-icons";
+import {
+  ArrowLeft,
+  ArrowRight,
+  GripHorizontal,
+  HandThumbsUp,
+  ThreeDots,
+} from "react-bootstrap-icons";
 import { useProgressRouter } from "@/hooks";
+import SwipeableViews from "react-swipeable-views";
 
 interface PostCardProps {
   post: Post;
@@ -99,6 +106,8 @@ const PostCard = memo(({ post }: PostCardProps) => {
 
   const closeModal = useCallback(() => setShowEditModal(false), []);
 
+  const [index, setIndex] = useState(0);
+
   return (
     <>
       <Box
@@ -134,7 +143,11 @@ const PostCard = memo(({ post }: PostCardProps) => {
               <MenuList>
                 <MenuItem onClick={onEditPost}>Edit</MenuItem>
                 <MenuItem onClick={onDeletePost}>Delete</MenuItem>
-                <MenuItem onClick={onHidePost}>Hide</MenuItem>
+                {post.hidden ? (
+                  <MenuItem onClick={onUnHidePost}>Unhide</MenuItem>
+                ) : (
+                  <MenuItem onClick={onHidePost}>Hide</MenuItem>
+                )}
               </MenuList>
             </Menu>
           </Box>
@@ -148,12 +161,46 @@ const PostCard = memo(({ post }: PostCardProps) => {
           />
         )}
         {!!post.images?.length && (
-          <Flex gap={2} wrap="wrap" mt={4}>
-            {post.images.map((image) => (
-              <Box>
-                <Image src={image} alt="Image" width="100%" />
-              </Box>
-            ))}
+          <Flex mt={4} pos="relative" alignItems={"center"}>
+            <Flex
+              pos="absolute"
+              top="0"
+              left="0"
+              bottom="0"
+              alignItems={"center"}
+              zIndex="1"
+            >
+              <IconButton
+                aria-label="previous image"
+                icon={<ArrowLeft />}
+                isDisabled={!index}
+                size="sm"
+                onClick={() => setIndex((prevIndex) => prevIndex - 1)}
+              />
+            </Flex>
+            <SwipeableViews index={index}>
+              {post.images.map((image) => (
+                <Flex height="100%" alignItems={"center"}>
+                  <Image src={image} alt="Image" height="100%" />
+                </Flex>
+              ))}
+            </SwipeableViews>
+            <Flex
+              pos="absolute"
+              top="0"
+              right="0"
+              bottom="0"
+              alignItems={"center"}
+              zIndex="1"
+            >
+              <IconButton
+                aria-label="next image"
+                icon={<ArrowRight />}
+                isDisabled={post.images?.length - 1 === index}
+                size="sm"
+                onClick={() => setIndex((prevIndex) => prevIndex + 1)}
+              />
+            </Flex>
           </Flex>
         )}
         {!!post.files?.length && (
@@ -177,7 +224,7 @@ const PostCard = memo(({ post }: PostCardProps) => {
               <Flex alignItems={"center"} gap={2}>
                 <IconButton
                   icon={<HandThumbsUp />}
-                  color={post.liked ? "blue" : "inherit"}
+                  colorScheme={post.liked ? "linkedin" : undefined}
                   onClick={() => {
                     if (post.liked) {
                       onUnlikePost();
