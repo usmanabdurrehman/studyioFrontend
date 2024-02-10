@@ -1,9 +1,9 @@
 import service from "@/services";
-import { useUserStore } from "@/store";
 import { useQuery } from "@tanstack/react-query";
+import { useLoggedUser } from "../useLoggedUser";
 
 export const useProfileInfo = (id?: string) => {
-  const user = useUserStore((store) => store.user);
+  const { data: user } = useLoggedUser();
   const ID = id || user?._id;
 
   return useQuery(

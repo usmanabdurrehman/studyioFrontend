@@ -14,7 +14,7 @@ export default function PostComments({ post }: { post: Post }) {
   const { refetch: refetchTimeline } = useTimelinePosts();
   const { refetch: refetchProfileInfo } = useProfileInfo();
 
-  const postComments = showMore ? post.comments : post?.comments.slice(0, 2);
+  const postComments = showMore ? post.comments : post?.comments?.slice(0, 2);
 
   return (
     <Formik
@@ -44,7 +44,7 @@ export default function PostComments({ post }: { post: Post }) {
               )}
             </Field>
             <Box mt={2}>
-              {postComments.map((postComment, index) => (
+              {postComments?.map((postComment, index) => (
                 <Box mt={2} mb={2}>
                   <Comment comment={postComment} />
                   {index !== postComments?.length - 1 && (

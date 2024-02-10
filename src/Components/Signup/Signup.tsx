@@ -9,13 +9,14 @@ import {
   FormErrorMessage,
   FormLabel,
   Input,
+  Spinner,
   Text,
 } from "@chakra-ui/react";
 import { Field, FieldProps, Formik } from "formik";
 import React, { memo, useMemo } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { buildFormikFormData } from "@/utils";
+import { useProgressRouter } from "@/hooks";
 
 interface SignupProps {}
 
@@ -30,9 +31,9 @@ const Signup = memo(({}: SignupProps) => {
     []
   );
 
-  const router = useRouter();
+  const router = useProgressRouter();
 
-  const { mutateAsync: signup } = useSignup();
+  const { mutateAsync: signup, isLoading } = useSignup();
 
   return (
     <Formik
@@ -93,7 +94,7 @@ const Signup = memo(({}: SignupProps) => {
                   mt={4}
                   onClick={submitForm}
                 >
-                  Sign up
+                  {isLoading ? <Spinner size="xs" /> : "Sign up"}
                 </Button>
                 <Text fontSize="sm" mt={2}>
                   Already have an account?{" "}

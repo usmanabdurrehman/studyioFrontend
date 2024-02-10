@@ -5,15 +5,14 @@ import React, { memo, useCallback } from "react";
 import Skeleton from "react-loading-skeleton";
 import styles from "./Profile.module.scss";
 import "react-loading-skeleton/dist/skeleton.css";
-import { useUserStore } from "@/store";
 import { Post } from "@/types";
-import { useProfileInfo } from "@/queries";
+import { useLoggedUser, useProfileInfo } from "@/queries";
 import { useFollowPerson, useUnfollowPerson } from "@/mutations";
 import Link from "next/link";
 import { PostCard } from "../PostCard";
 import { Box, Flex, IconButton, Image } from "@chakra-ui/react";
-import { FaCamera, FaUserPlus, FaUserSlash } from "react-icons/fa6";
 import PostCardSkeleton from "../PostCardSkeleton/PostCardSkeleton";
+import { Camera, PersonFillAdd, PersonFillDash } from "react-bootstrap-icons";
 
 const IMAGE_SIZE = 150;
 
@@ -21,7 +20,7 @@ const Profile = memo(({ userId }: { userId: string }) => {
   const { data: profileInfo, refetch: refetchProfileInfo } =
     useProfileInfo(userId);
 
-  const user = useUserStore((state) => state.user);
+  const { data: user } = useLoggedUser();
   const loggedUserId = user?._id;
 
   const postContent = (posts: Post[] | undefined) => {
@@ -85,7 +84,7 @@ const Profile = memo(({ userId }: { userId: string }) => {
               visibility="hidden"
               _groupHover={{ visibility: "visible !important" }}
               aria-label="Edit Picture"
-              icon={<FaCamera />}
+              icon={<Camera />}
             />
           </Box>
           <div className={styles.profileStats}>
@@ -117,7 +116,7 @@ const Profile = memo(({ userId }: { userId: string }) => {
             bottom={1}
             right={1}
             colorScheme={isFollowing ? "whatsapp" : "linkedin"}
-            icon={isFollowing ? <FaUserSlash /> : <FaUserPlus />}
+            icon={isFollowing ? <PersonFillDash /> : <PersonFillAdd />}
             onClick={isFollowing ? onUnfollow : onFollow}
           />
         </div>

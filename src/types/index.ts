@@ -24,6 +24,7 @@ export interface Post extends Abstract {
   liked: boolean;
   comments: Comment[];
   files: Attachment[];
+  hidden: boolean;
 }
 
 export interface User extends Abstract {

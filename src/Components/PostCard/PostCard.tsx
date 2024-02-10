@@ -26,11 +26,13 @@ import {
 } from "@chakra-ui/react";
 import Link from "next/link";
 import React, { memo, useCallback, useMemo, useState } from "react";
-import { FaEllipsis, FaThumbsUp } from "react-icons/fa6";
 import { AddPostCard } from "../AddPostCard";
 import { FileIcon, defaultStyles, DefaultExtensionType } from "react-file-icon";
 
 import { PostComments } from "../PostComments";
+import { usePathname } from "next/navigation";
+import { GripHorizontal, HandThumbsUp, ThreeDots } from "react-bootstrap-icons";
+import { useProgressRouter } from "@/hooks";
 
 interface PostCardProps {
   post: Post;
@@ -45,35 +47,51 @@ const PostCard = memo(({ post }: PostCardProps) => {
 
   const { mutateAsync: deletePost } = useDeletePost();
 
+  const { refetch: refetchPostById } = usePostById(post._id);
+
   const { refetch: refetchTimeline } = useTimelinePosts();
   const { refetch: refetchProfileInfo } = useProfileInfo();
 
   const [showEditModal, setShowEditModal] = useState(false);
 
+  const router = useProgressRouter();
+  const pathname = usePathname();
+
+  const redirectToTimeline = useCallback(() => {
+    pathname !== "/timeline" && router.push("/timeline");
+  }, []);
+
   const updatePostsInfo = useCallback(() => {
+    refetchPostById();
     refetchTimeline();
     refetchProfileInfo();
-  }, []);
+  }, [refetchPostById, refetchTimeline, refetchProfileInfo]);
 
   const onLikePost = useCallback(async () => {
     await likePost(post._id);
     updatePostsInfo();
-  }, []);
+  }, [likePost, updatePostsInfo]);
 
   const onUnlikePost = useCallback(async () => {
     await unlikePost(post._id);
     updatePostsInfo();
-  }, []);
+  }, [unlikePost, updatePostsInfo]);
 
   const onDeletePost = useCallback(async () => {
     await deletePost(post._id);
     updatePostsInfo();
-  }, []);
+    redirectToTimeline();
+  }, [deletePost, updatePostsInfo, redirectToTimeline]);
 
   const onHidePost = useCallback(async () => {
     await hidePost(post._id);
     updatePostsInfo();
-  }, []);
+  }, [hidePost, updatePostsInfo, redirectToTimeline]);
+
+  const onUnHidePost = useCallback(async () => {
+    await unhidePost(post._id);
+    updatePostsInfo();
+  }, [hidePost, updatePostsInfo]);
 
   const onEditPost = useCallback(async () => {
     setShowEditModal(true);
@@ -110,7 +128,7 @@ const PostCard = memo(({ post }: PostCardProps) => {
               <MenuButton
                 as={IconButton}
                 aria-label="More Post Options"
-                icon={<FaEllipsis />}
+                icon={<ThreeDots />}
                 size="xs"
               />
               <MenuList>
@@ -158,7 +176,7 @@ const PostCard = memo(({ post }: PostCardProps) => {
             <Box>
               <Flex alignItems={"center"} gap={2}>
                 <IconButton
-                  icon={<FaThumbsUp />}
+                  icon={<HandThumbsUp />}
                   color={post.liked ? "blue" : "inherit"}
                   onClick={() => {
                     if (post.liked) {
@@ -181,7 +199,7 @@ const PostCard = memo(({ post }: PostCardProps) => {
           </Flex>
         </Box>
       </Box>
-      <Modal isOpen={showEditModal} onClose={closeModal} isCentered>
+      <Modal isOpen={showEditModal} onClose={closeModal} isCentered size="3xl">
         <ModalOverlay />
         <ModalContent>
           <ModalCloseButton />

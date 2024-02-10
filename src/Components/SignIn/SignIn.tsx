@@ -10,13 +10,13 @@ import {
   FormErrorMessage,
   FormLabel,
   Input,
+  Spinner,
   Text,
 } from "@chakra-ui/react";
 import { Field, FieldProps, Formik } from "formik";
 import React, { memo, useMemo } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useUserStore } from "@/store";
+import { useProgressRouter } from "@/hooks";
 
 const SignIn = memo(() => {
   const initialValues = useMemo(
@@ -28,20 +28,20 @@ const SignIn = memo(() => {
     []
   );
 
-  const { mutateAsync: signin } = useSignin();
-  const router = useRouter();
+  const { mutateAsync: signin, isLoading } = useSignin();
 
-  const setUser = useUserStore((state) => state.setUser);
+  const router = useProgressRouter();
+
   return (
     <Formik
       initialValues={initialValues}
-      onSubmit={async ({ rememberMe, ...values }) => {
-        const data = await signin(values);
-        console.log({ data });
-        if (data?.user) {
-          setUser(data?.user);
-          router.push("/timeline");
-        }
+      onSubmit={async (values) => {
+        try {
+          const data = await signin(values);
+          if (data?.auth) {
+            router.push("/timeline");
+          }
+        } catch (err) {}
       }}
     >
       {({ submitForm }) => {
@@ -88,8 +88,9 @@ const SignIn = memo(() => {
                   size="sm"
                   mt={2}
                   onClick={submitForm}
+                  width={100}
                 >
-                  Sign In
+                  {isLoading ? <Spinner size="xs" /> : "Sign In"}
                 </Button>
                 <Text fontSize="sm" mt={2}>
                   Haven&apos;t got an account?{" "}

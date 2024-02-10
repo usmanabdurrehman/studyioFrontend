@@ -3,10 +3,10 @@
 import { useLogout } from "@/mutations/useLogout";
 import {
   useFetchNames,
+  useLoggedUser,
   useNotifications,
   useUnseenNotificationCount,
 } from "@/queries";
-import { useUserStore } from "@/store";
 import {
   Avatar,
   AvatarBadge,
@@ -29,14 +29,13 @@ import {
 import Link from "next/link";
 import { useCallback, useRef, useState } from "react";
 
-import { FaEllipsis, FaCircleXmark, FaBell } from "react-icons/fa6";
-
-import { useRouter } from "next/navigation";
 import { useSeeNotifications } from "@/mutations";
 import { NotificationAction } from "@/types";
+import { Bell, BellFill } from "react-bootstrap-icons";
+import { useProgressRouter } from "@/hooks";
 
 export const Navbar = () => {
-  const user = useUserStore((state) => state.user);
+  const { data: user } = useLoggedUser();
 
   const [search, setSearch] = useState("");
 
@@ -53,7 +52,7 @@ export const Navbar = () => {
 
   const initialFocusRef = useRef(null);
 
-  const router = useRouter();
+  const router = useProgressRouter();
 
   const onNotificationClick = useCallback(async () => {
     refetchNotifications();
@@ -137,7 +136,7 @@ export const Navbar = () => {
                 as={IconButton}
                 icon={
                   <>
-                    <Avatar icon={<FaBell />} size="xs">
+                    <Avatar icon={<BellFill />} size="xs">
                       {!!unseenNotificationCount && (
                         <AvatarBadge boxSize="1.25em" bg="green.500" />
                       )}

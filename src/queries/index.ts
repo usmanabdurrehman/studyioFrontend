@@ -5,3 +5,4 @@ export { useUnseenNotificationCount } from "./useUnseenNotificationCount";
 export { useTechNews } from "./useTechNews";
 export { usePostById } from "./usePostById";
 export { useNotifications } from "./useNotifications";
+export { useLoggedUser } from "./useLoggedUser";

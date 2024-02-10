@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, memo, useState } from "react";
 
 import SwipeableViews from "react-swipeable-views";
-import { FaChevronLeft } from "react-icons/fa6";
 
 import {
   Box,
@@ -12,6 +11,7 @@ import {
   List,
   ListItem,
 } from "@chakra-ui/react";
+import { ArrowLeft, ChevronLeft } from "react-bootstrap-icons";
 
 const messages: any[] = [];
 const message: any = {};
@@ -63,7 +63,7 @@ const Chat = memo(({}) => {
         {"Inbox"}
         {index === 1 && (
           <IconButton
-            icon={<FaChevronLeft />}
+            icon={<ChevronLeft />}
             aria-label="Go back"
             position="absolute"
             right="5px"
@@ -161,7 +161,6 @@ const Chat = memo(({}) => {
                 padding="5px"
                 fontSize="12px"
                 borderRadius="0 4px 0 4px"
-                backgroundColor="#f4f4f4"
                 margin="10px 0"
                 width="90%"
                 {...(sentBy === userId
@@ -171,6 +170,7 @@ const Chat = memo(({}) => {
                       alignSelf: "flex-start",
                     }
                   : {
+                      backgroundColor = "#f4f4f4",
                       color: "black",
                       alignSelf: "flex-end",
                     })}

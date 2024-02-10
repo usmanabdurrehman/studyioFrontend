@@ -5,20 +5,19 @@ import React, { memo, useCallback, useMemo } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 
 import { Box, Button, Flex, Icon, IconButton } from "@chakra-ui/react";
-import {
-  FaCross,
-  FaImage,
-  FaPaperclip,
-  FaRegCircleXmark,
-  FaXmark,
-} from "react-icons/fa6";
 import { FileUpload } from "../FileUpload";
 import { Formik, FormikHelpers } from "formik";
 import { useAddPost, useEditPost } from "@/mutations";
 import { Attachment, Post } from "@/types";
 import { buildFormikFormData } from "@/utils";
 import { useProfileInfo, useTimelinePosts } from "@/queries";
-import { FileIcon, defaultStyles } from "react-file-icon";
+import {
+  FileIcon,
+  defaultStyles,
+  FileIconProps,
+  DefaultExtensionType,
+} from "react-file-icon";
+import { CardImage, Paperclip, XLg } from "react-bootstrap-icons";
 
 interface AddPostCardProps {
   post?: Post;
@@ -91,10 +90,6 @@ export const AddPostCard = memo(
           });
         }
 
-        formdata.forEach((value, key) => {
-          console.log({ [key]: value });
-        });
-
         if (post) {
           formdata.append("oldAttachments", JSON.stringify(oldAttachments));
           formdata.append("oldImages", JSON.stringify(oldImages));
@@ -114,7 +109,6 @@ export const AddPostCard = memo(
     return (
       <Formik initialValues={initialValues} onSubmit={onSubmit}>
         {({ values, setFieldValue, submitForm }) => {
-          console.log(values.attachments);
           return (
             <Box width={"100%"} background="white" boxShadow={"md"}>
               <Flex
@@ -127,7 +121,7 @@ export const AddPostCard = memo(
                 <Box>{post ? "Edit Post" : "New Post"}</Box>
                 <Flex gap={2}>
                   <FileUpload
-                    icon={<FaImage />}
+                    icon={<CardImage />}
                     ariaLabel="Attach Images"
                     onChange={(e) => {
                       setFieldValue("images", [
@@ -138,10 +132,9 @@ export const AddPostCard = memo(
                     accept=".jpg,.png"
                   />
                   <FileUpload
-                    icon={<FaPaperclip />}
+                    icon={<Paperclip />}
                     ariaLabel="Attach Documents"
                     onChange={(e) => {
-                      console.log("onChange got called");
                       setFieldValue("attachments", [
                         ...values.attachments,
                         ...((e.target.files || []) as FileList[]),
@@ -163,6 +156,7 @@ export const AddPostCard = memo(
                   value={values.postText}
                   onEditorChange={(text) => setFieldValue("postText", text)}
                 />
+
                 {values.images && (
                   <Flex gap={1} flexWrap="wrap" mt={2}>
                     {values.images.map((image) => (
@@ -198,7 +192,7 @@ export const AddPostCard = memo(
                           _groupHover={{ visibility: "visible !important" }}
                           aria-label="Remove Image"
                           size="xs"
-                          icon={<FaXmark />}
+                          icon={<XLg />}
                         />
                       </Box>
                     ))}
@@ -213,15 +207,11 @@ export const AddPostCard = memo(
                           : attachment?.filename
                       )
                         ?.split(".")
-                        .at(-1);
+                        .at(-1) as DefaultExtensionType;
                       return (
                         <Box data-group pos="relative">
                           <Box width={12} height={12}>
-                            <FileIcon
-                              extension={ext}
-                              {...defaultStyles[ext]}
-                              className
-                            />
+                            <FileIcon extension={ext} {...defaultStyles[ext]} />
                           </Box>
 
                           <IconButton
@@ -247,7 +237,7 @@ export const AddPostCard = memo(
                             _groupHover={{ visibility: "visible !important" }}
                             aria-label="Remove Image"
                             size="xs"
-                            icon={<FaXmark />}
+                            icon={<XLg />}
                           />
                         </Box>
                       );

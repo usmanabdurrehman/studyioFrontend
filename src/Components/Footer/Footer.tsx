@@ -9,7 +9,7 @@ const Footer = memo(() => (
     bg="#000036"
     color="white"
   >
-    Study.io, Copyright 2021
+    Study.io, Copyright 2024
   </Flex>
 ));
 
