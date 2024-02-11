@@ -1,0 +1,1 @@
+export { useHidePost } from "./useHidePost";

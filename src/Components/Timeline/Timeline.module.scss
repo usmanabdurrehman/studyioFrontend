@@ -1,0 +1,30 @@
+.timelineWrapper {
+  margin-top: 30px;
+}
+
+.timelineGrid {
+  display: grid;
+  grid-gap: 30px;
+  grid-template-columns: 2fr 1fr;
+}
+
+.techNewsCard {
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 2px 2px 8px #aaa;
+  background-color: white;
+}
+
+.techNewsList {
+  padding-left: 17px;
+  margin-top: 10px;
+}
+
+.techNewsList > li {
+  line-height: 25px;
+  font-size: 14px;
+}
+
+.noPosts {
+  margin-top: 30px;
+}

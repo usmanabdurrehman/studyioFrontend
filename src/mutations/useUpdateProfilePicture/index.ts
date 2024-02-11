@@ -1,0 +1,1 @@
+export { useUpdateProfilePicture } from "./useUpdateProfilePicture";
