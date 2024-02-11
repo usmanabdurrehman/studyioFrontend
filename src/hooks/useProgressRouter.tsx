@@ -1,15 +1,17 @@
 import * as NProgress from "nprogress";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context";
 
 export const useProgressRouter = (): AppRouterInstance => {
   const router = useRouter();
+  const pathname = usePathname();
 
   return {
     ...router,
-    push: (...args) => {
+    push: (path, ...args) => {
+      if (path.startsWith(pathname)) return;
       NProgress.start();
-      router.push(...args);
+      router.push(path, ...args);
     },
   };
 };

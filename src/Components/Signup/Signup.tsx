@@ -18,6 +18,7 @@ import Link from "next/link";
 import { buildFormikFormData } from "@/utils";
 import { useProgressRouter } from "@/hooks";
 import * as Yup from "yup";
+import { PATH } from "@/constants";
 
 interface SignupProps {}
 
@@ -49,7 +50,7 @@ const Signup = memo(function Signup({}: SignupProps) {
   const onSubmit = useCallback(
     async (values: SignupForm) => {
       const data = await signup(buildFormikFormData(values));
-      if (data?.status) router.push("/signin");
+      if (data?.status) router.push(PATH.SIGNIN);
     },
     [signup, router]
   );
@@ -117,14 +118,14 @@ const Signup = memo(function Signup({}: SignupProps) {
                 <Text fontSize="sm" mt={2}>
                   Already have an account?{" "}
                   <u>
-                    <Link href="/signin">Sign in</Link>
+                    <Link href={PATH.SIGNIN}>Sign in</Link>
                   </u>
                 </Text>
               </div>
             </Flex>
             <Box
               flex="1"
-              bg={'url("./cover/signup.jpg")'}
+              bg={'url("./cover/signup-min.jpg")'}
               backgroundSize="cover"
             />
           </Flex>

@@ -33,6 +33,7 @@ import { useSeeNotifications } from "@/mutations";
 import { NotificationAction } from "@/types";
 import { Bell, BellFill } from "react-bootstrap-icons";
 import { useProgressRouter } from "@/hooks";
+import { PATH } from "@/constants";
 
 export const Navbar = memo(function Navbar() {
   const { data: user } = useLoggedUser();
@@ -62,14 +63,15 @@ export const Navbar = memo(function Navbar() {
 
   const navigateToProfilePage = useCallback(
     (doerId: string) => {
-      router.push(`/profile/${doerId}`);
+      router.push(PATH.getProfilePath(doerId));
     },
     [router]
   );
 
   const navigateToPostPage = useCallback(
     (postId: string) => {
-      router.push(`/post/${postId}`);
+      console.log(PATH.getPostPath(postId));
+      router.push(PATH.getPostPath(postId));
     },
     [router]
   );
@@ -81,7 +83,7 @@ export const Navbar = memo(function Navbar() {
           <Box>
             <Flex alignItems={"center"} gap={4}>
               <Text fontWeight={"bold"} fontSize="lg">
-                <Link href="/timeline">Study.io</Link>
+                <Link href={PATH.TIMELINE}>Study.io</Link>
               </Text>
               <Popover
                 placement="bottom"
@@ -120,7 +122,11 @@ export const Navbar = memo(function Navbar() {
                 <PopoverContent>
                   <Flex direction={"column"} gap={2} color="black" p={2}>
                     {names?.map(({ name, _id }) => (
-                      <Link color="black" href={`/profile/${_id}`} key={_id}>
+                      <Link
+                        color="black"
+                        href={PATH.getProfilePath(_id)}
+                        key={_id}
+                      >
                         <Text fontSize="xs">{name}</Text>
                       </Link>
                     ))}
@@ -130,10 +136,10 @@ export const Navbar = memo(function Navbar() {
             </Flex>
           </Box>
           <Flex alignItems={"center"} gap={4}>
-            <Link href="/timeline">
+            <Link href={PATH.TIMELINE}>
               <Text fontSize="sm">Timeline</Text>
             </Link>
-            <Link href={`/profile/${user?._id}`}>
+            <Link href={PATH.getProfilePath(user?._id)}>
               <Avatar src={user?.profileImage} size="xs" name={user?.name} />
             </Link>
             <Menu>
@@ -175,7 +181,7 @@ export const Navbar = memo(function Navbar() {
             <Button
               onClick={async () => {
                 await logout();
-                router.push("/signin");
+                router.push(PATH.SIGNIN);
               }}
               size="xs"
             >

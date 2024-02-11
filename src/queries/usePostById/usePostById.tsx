@@ -2,7 +2,7 @@ import service from "@/services";
 import { Post } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 
-export const usePostById = (id: string | undefined) => {
+export const usePostById = (id: string | undefined, enabled = true) => {
   return useQuery(
     ["GET_POST_BY_ID", id],
     async (): Promise<Post | { status: false }> => {
@@ -11,6 +11,6 @@ export const usePostById = (id: string | undefined) => {
       });
       return data;
     },
-    { enabled: !!id }
+    { enabled: !!id && !!enabled }
   );
 };

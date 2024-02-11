@@ -4,13 +4,26 @@ import { Inter } from "next/font/google";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ChakraProvider } from "@chakra-ui/react";
 import NextTopLoader from "nextjs-toploader";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { usePathname, useSearchParams } from "next/navigation";
 import * as NProgress from "nprogress";
 
 const inter = Inter({ subsets: ["latin"] });
+
+const showAlertToast = (data: unknown) => {
+  const response = data as {
+    status: boolean;
+    alert?: { type: "success" | "error"; msg: string };
+  };
+  if (response?.alert) {
+    const { type, msg } = response.alert;
+    console.log("yo");
+    if (type === "success") toast.success(msg);
+    else toast.error(msg);
+  }
+};
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -20,18 +33,14 @@ const queryClient = new QueryClient({
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
       cacheTime: 0,
+      onSettled: showAlertToast,
     },
     mutations: {
-      onSettled: (data) => {
-        const response = data as {
-          status: boolean;
-          alert?: { type: "success" | "error"; msg: string };
-        };
-        if (response?.alert) {
-          const { type, msg } = response.alert;
-          if (type === "success") toast.success(msg);
-          else toast.error(msg);
-        }
+      onSettled: showAlertToast,
+      onError: () => {
+        toast.error(
+          "Something happened unexpectedly. Please try again in a few minutes"
+        );
       },
     },
   },

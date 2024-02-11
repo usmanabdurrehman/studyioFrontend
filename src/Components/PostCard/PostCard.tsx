@@ -40,6 +40,7 @@ import {
 } from "react-bootstrap-icons";
 import { useProgressRouter } from "@/hooks";
 import SwipeableViews from "react-swipeable-views";
+import { PATH } from "@/constants";
 
 interface PostCardProps {
   post: Post;
@@ -54,7 +55,7 @@ const PostCard = memo(function PostCard({ post }: PostCardProps) {
 
   const { mutateAsync: deletePost } = useDeletePost();
 
-  const { refetch: refetchPostById } = usePostById(post._id);
+  const { refetch: refetchPostById } = usePostById(post._id, false);
 
   const { refetch: refetchTimeline } = useTimelinePosts();
   const { refetch: refetchProfileInfo } = useProfileInfo();
@@ -65,7 +66,7 @@ const PostCard = memo(function PostCard({ post }: PostCardProps) {
   const pathname = usePathname();
 
   const redirectToTimeline = useCallback(() => {
-    pathname !== "/timeline" && router.push("/timeline");
+    pathname !== PATH.TIMELINE && router.push(PATH.TIMELINE);
   }, [pathname, router]);
 
   const updatePostsInfo = useCallback(() => {
@@ -128,7 +129,9 @@ const PostCard = memo(function PostCard({ post }: PostCardProps) {
                 alt="Profile"
               />
               <p>
-                <Link href={`/profile/${post.userId}`}>{post?.user?.name}</Link>
+                <Link href={PATH.getProfilePath(post.userId)}>
+                  {post?.user?.name}
+                </Link>
               </p>
             </Flex>
           </Box>
@@ -178,6 +181,7 @@ const PostCard = memo(function PostCard({ post }: PostCardProps) {
                 onClick={() => setIndex((prevIndex) => prevIndex - 1)}
               />
             </Flex>
+            {/*@ts-ignore*/}
             <SwipeableViews index={index}>
               {/*@ts-ignore*/}
               {post.images.map((image) => (
