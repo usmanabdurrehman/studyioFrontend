@@ -1,1 +1,0 @@
-export { AddPostCard } from "./AddPostCard";

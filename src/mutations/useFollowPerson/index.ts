@@ -1,1 +1,0 @@
-export { useFollowPerson } from "./useFollowPerson";

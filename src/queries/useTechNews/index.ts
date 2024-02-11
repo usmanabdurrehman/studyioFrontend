@@ -1,1 +1,0 @@
-export { useTechNews } from "./useTechNews";

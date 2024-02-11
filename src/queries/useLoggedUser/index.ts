@@ -1,1 +1,0 @@
-export { useLoggedUser } from "./useLoggedUser";

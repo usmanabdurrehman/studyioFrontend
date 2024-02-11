@@ -1,1 +1,0 @@
-export { useDeletePost } from "./useDeletePost";

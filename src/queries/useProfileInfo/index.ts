@@ -1,1 +1,0 @@
-export { useProfileInfo } from "./useProfileInfo";
