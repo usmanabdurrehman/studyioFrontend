@@ -8,12 +8,12 @@ interface FileUploadProps {
   accept?: string;
 }
 
-export const FileUpload = ({
+export const FileUpload = function ({
   icon,
   onChange,
   accept,
   ariaLabel,
-}: FileUploadProps) => {
+}: FileUploadProps) {
   const ref = useRef<HTMLInputElement>(null);
 
   return (

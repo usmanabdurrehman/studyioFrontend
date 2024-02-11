@@ -28,7 +28,7 @@ const onMessageChange = () => {};
 const conversations: any[] = [];
 const searchNames: any[] = [];
 
-const Chat = memo(({}) => {
+const Chat = memo(function Chat({}) {
   const [index, setSelectedIndex] = useState(0);
   const userId = 1;
   const messagesContainer = useRef<HTMLDivElement>(null);
@@ -41,7 +41,7 @@ const Chat = memo(({}) => {
         behavior: "smooth",
       });
     }
-  }, [messages]);
+  }, []);
 
   return (
     <Flex
@@ -70,6 +70,7 @@ const Chat = memo(({}) => {
           />
         )}
       </Box>
+      {/*@ts-ignore*/}
       <SwipeableViews
         index={index}
         style={{ height: "100%" }}
@@ -89,7 +90,7 @@ const Chat = memo(({}) => {
             <List>
               {conversations.map(({ profileImage, name }) => {
                 return (
-                  <ListItem>
+                  <ListItem key={name}>
                     <Flex gap={2}>
                       <Image
                         src={profileImage}
@@ -126,7 +127,7 @@ const Chat = memo(({}) => {
                 </Box>
               )}
               {searchNames.map(({ name, profileImage }) => (
-                <ListItem>
+                <ListItem key={name}>
                   <Flex gap={2}>
                     <Image
                       src={profileImage}
@@ -158,6 +159,7 @@ const Chat = memo(({}) => {
           >
             {messages.map(({ text, sentBy }) => (
               <Box
+                key={sentBy}
                 padding="5px"
                 fontSize="12px"
                 borderRadius="0 4px 0 4px"
@@ -170,7 +172,7 @@ const Chat = memo(({}) => {
                       alignSelf: "flex-start",
                     }
                   : {
-                      backgroundColor = "#f4f4f4",
+                      backgroundColor: "#f4f4f4",
                       color: "black",
                       alignSelf: "flex-end",
                     })}

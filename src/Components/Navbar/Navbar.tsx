@@ -27,14 +27,14 @@ import {
   Text,
 } from "@chakra-ui/react";
 import Link from "next/link";
-import { useCallback, useRef, useState } from "react";
+import { memo, useCallback, useRef, useState } from "react";
 
 import { useSeeNotifications } from "@/mutations";
 import { NotificationAction } from "@/types";
 import { Bell, BellFill } from "react-bootstrap-icons";
 import { useProgressRouter } from "@/hooks";
 
-export const Navbar = () => {
+export const Navbar = memo(function Navbar() {
   const { data: user } = useLoggedUser();
 
   const [search, setSearch] = useState("");
@@ -58,15 +58,21 @@ export const Navbar = () => {
     refetchNotifications();
     await seeNotifications();
     refetchUnseenNotifications();
-  }, []);
+  }, [refetchNotifications, seeNotifications, refetchUnseenNotifications]);
 
-  const navigateToProfilePage = useCallback((doerId: string) => {
-    router.push(`/profile/${doerId}`);
-  }, []);
+  const navigateToProfilePage = useCallback(
+    (doerId: string) => {
+      router.push(`/profile/${doerId}`);
+    },
+    [router]
+  );
 
-  const navigateToPostPage = useCallback((postId: string) => {
-    router.push(`/post/${postId}`);
-  }, []);
+  const navigateToPostPage = useCallback(
+    (postId: string) => {
+      router.push(`/post/${postId}`);
+    },
+    [router]
+  );
 
   return (
     <Box bg="#000036" h={"70px"} color="white">
@@ -114,7 +120,7 @@ export const Navbar = () => {
                 <PopoverContent>
                   <Flex direction={"column"} gap={2} color="black" p={2}>
                     {names?.map(({ name, _id }) => (
-                      <Link color="black" href={`/profile/${_id}`}>
+                      <Link color="black" href={`/profile/${_id}`} key={_id}>
                         <Text fontSize="xs">{name}</Text>
                       </Link>
                     ))}
@@ -148,18 +154,21 @@ export const Navbar = () => {
                 size="xs"
               />
               <MenuList color="black">
-                {notifications.map(({ message, action, postId, doerId }) => (
-                  <MenuItem
-                    fontSize={"xs"}
-                    onClick={() => {
-                      action === NotificationAction.Followed
-                        ? navigateToProfilePage(doerId)
-                        : navigateToPostPage(postId);
-                    }}
-                  >
-                    {message}
-                  </MenuItem>
-                ))}
+                {notifications.map(
+                  ({ message, action, postId, doerId, _id }) => (
+                    <MenuItem
+                      key={_id}
+                      fontSize={"xs"}
+                      onClick={() => {
+                        action === NotificationAction.Followed
+                          ? navigateToProfilePage(doerId)
+                          : navigateToPostPage(postId);
+                      }}
+                    >
+                      {message}
+                    </MenuItem>
+                  )
+                )}
               </MenuList>
             </Menu>
 
@@ -177,4 +186,4 @@ export const Navbar = () => {
       </Container>
     </Box>
   );
-};
+});

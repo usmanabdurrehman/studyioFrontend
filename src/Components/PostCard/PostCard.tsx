@@ -45,7 +45,7 @@ interface PostCardProps {
   post: Post;
 }
 
-const PostCard = memo(({ post }: PostCardProps) => {
+const PostCard = memo(function PostCard({ post }: PostCardProps) {
   const { mutateAsync: likePost } = useLikePost();
   const { mutateAsync: unlikePost } = useUnlikePost();
 
@@ -66,7 +66,7 @@ const PostCard = memo(({ post }: PostCardProps) => {
 
   const redirectToTimeline = useCallback(() => {
     pathname !== "/timeline" && router.push("/timeline");
-  }, []);
+  }, [pathname, router]);
 
   const updatePostsInfo = useCallback(() => {
     refetchPostById();
@@ -77,28 +77,28 @@ const PostCard = memo(({ post }: PostCardProps) => {
   const onLikePost = useCallback(async () => {
     await likePost(post._id);
     updatePostsInfo();
-  }, [likePost, updatePostsInfo]);
+  }, [likePost, updatePostsInfo, post._id]);
 
   const onUnlikePost = useCallback(async () => {
     await unlikePost(post._id);
     updatePostsInfo();
-  }, [unlikePost, updatePostsInfo]);
+  }, [unlikePost, updatePostsInfo, post._id]);
 
   const onDeletePost = useCallback(async () => {
     await deletePost(post._id);
     updatePostsInfo();
     redirectToTimeline();
-  }, [deletePost, updatePostsInfo, redirectToTimeline]);
+  }, [deletePost, updatePostsInfo, redirectToTimeline, post._id]);
 
   const onHidePost = useCallback(async () => {
     await hidePost(post._id);
     updatePostsInfo();
-  }, [hidePost, updatePostsInfo, redirectToTimeline]);
+  }, [hidePost, updatePostsInfo, post._id]);
 
   const onUnHidePost = useCallback(async () => {
     await unhidePost(post._id);
     updatePostsInfo();
-  }, [hidePost, updatePostsInfo]);
+  }, [unhidePost, updatePostsInfo, post._id]);
 
   const onEditPost = useCallback(async () => {
     setShowEditModal(true);
@@ -179,8 +179,9 @@ const PostCard = memo(({ post }: PostCardProps) => {
               />
             </Flex>
             <SwipeableViews index={index}>
+              {/*@ts-ignore*/}
               {post.images.map((image) => (
-                <Flex height="100%" alignItems={"center"}>
+                <Flex height="100%" alignItems={"center"} key={image}>
                   <Image src={image} alt="Image" height="100%" />
                 </Flex>
               ))}
@@ -205,13 +206,11 @@ const PostCard = memo(({ post }: PostCardProps) => {
         )}
         {!!post.files?.length && (
           <Flex gap={2} wrap="wrap" mt={4}>
-            {post.files.map((attachment) => {
-              const ext = attachment?.filename
-                ?.split(".")
-                .at(-1) as DefaultExtensionType;
+            {post.files.map(({ filename }) => {
+              const ext = filename?.split(".").at(-1) as DefaultExtensionType;
 
               return (
-                <Box width={12} height={12}>
+                <Box width={12} height={12} key={filename}>
                   <FileIcon extension={ext} {...defaultStyles[ext]} />
                 </Box>
               );

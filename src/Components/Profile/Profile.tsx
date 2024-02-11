@@ -16,7 +16,7 @@ import { Camera, PersonFillAdd, PersonFillDash } from "react-bootstrap-icons";
 
 const IMAGE_SIZE = 150;
 
-const Profile = memo(({ userId }: { userId: string }) => {
+const Profile = memo(function Profile({ userId }: { userId: string }) {
   const { data: profileInfo, refetch: refetchProfileInfo } =
     useProfileInfo(userId);
 
@@ -27,23 +27,23 @@ const Profile = memo(({ userId }: { userId: string }) => {
     if (posts) {
       if (posts.length === 0) {
         return (
-          <p className={styles.noPosts}>
-            Sorry. There are no posts to show.{" "}
-            <Link href="/timeline">Make your first now</Link>
-          </p>
+          <Box mt={8}>
+            <p>
+              Sorry. There are no posts to show.{" "}
+              <Link href="/timeline">Make your first now</Link>
+            </p>
+          </Box>
         );
       }
       return (
         <Flex direction="column" gap={4}>
           {posts.map((post: Post) => (
-            <PostCard post={post} />
+            <PostCard post={post} key={post._id} />
           ))}
         </Flex>
       );
     }
-    return Array(3)
-      .fill("-")
-      .map(() => <PostCardSkeleton />);
+    return Array.from({ length: 3 }, (_, i) => <PostCardSkeleton key={i} />);
   };
 
   const { mutateAsync: follow } = useFollowPerson();
@@ -52,11 +52,12 @@ const Profile = memo(({ userId }: { userId: string }) => {
   const onUnfollow = useCallback(async () => {
     await unfollow(userId);
     refetchProfileInfo();
-  }, []);
+  }, [unfollow, userId, refetchProfileInfo]);
+
   const onFollow = useCallback(async () => {
     await follow(userId);
     refetchProfileInfo();
-  }, []);
+  }, [follow, userId, refetchProfileInfo]);
 
   const isFollowing = !!profileInfo?.user?.isFollowing;
 
@@ -68,10 +69,11 @@ const Profile = memo(({ userId }: { userId: string }) => {
             {profileInfo?.user?.profileImage ? (
               <Image
                 src={profileInfo?.user?.profileImage}
-                className={styles.profilePic}
                 alt="Profile"
                 height={IMAGE_SIZE}
                 width={IMAGE_SIZE}
+                cursor="pointer"
+                borderRadius={"sm"}
               />
             ) : (
               <Skeleton height={IMAGE_SIZE} width={IMAGE_SIZE} />
@@ -102,14 +104,12 @@ const Profile = memo(({ userId }: { userId: string }) => {
           </div>
         </Flex>
         <Box flex="1">
-          <div className={styles.profileInfo}>
-            <p>{profileInfo?.user?.bio}</p>
-          </div>
+          <p>{profileInfo?.user?.bio}</p>
         </Box>
       </Flex>
       <Box mt={4}>{postContent(profileInfo?.posts)}</Box>
       {userId !== loggedUserId && profileInfo?.user && (
-        <div className={styles.fabWrapper}>
+        <Box pos={"fixed"} bottom={4} left={4}>
           <IconButton
             aria-label="follow/unfollow"
             pos={"absolute"}
@@ -119,7 +119,7 @@ const Profile = memo(({ userId }: { userId: string }) => {
             icon={isFollowing ? <PersonFillDash /> : <PersonFillAdd />}
             onClick={isFollowing ? onUnfollow : onFollow}
           />
-        </div>
+        </Box>
       )}
     </Box>
   );

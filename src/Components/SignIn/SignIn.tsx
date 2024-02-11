@@ -36,7 +36,7 @@ const SignInSchema = Yup.object().shape({
   password: Yup.string().required("The password is required"),
 });
 
-const SignIn = memo(() => {
+const SignIn = memo(function SignIn() {
   const { mutateAsync: signin, isLoading } = useSignin();
 
   const router = useProgressRouter();

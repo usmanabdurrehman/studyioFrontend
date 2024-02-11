@@ -17,11 +17,9 @@ import {
 } from "@chakra-ui/react";
 import { Eye, EyeSlash } from "react-bootstrap-icons";
 
-const PostContent = () => {
+const PostContent = memo(function PostContent() {
   const { data: posts } = useTimelinePosts();
   const [showHiddenPosts, setShowHiddenPosts] = useState(false);
-
-  console.log({ posts });
 
   const filteredPosts = useMemo(
     () =>
@@ -35,8 +33,8 @@ const PostContent = () => {
   if (!posts)
     return (
       <Flex direction={"column"} gap={2}>
-        {Array.from({ length: 3 }, () => (
-          <PostCardSkeleton />
+        {Array.from({ length: 3 }, (_, i) => (
+          <PostCardSkeleton key={i} />
         ))}
       </Flex>
     );
@@ -63,14 +61,14 @@ const PostContent = () => {
       </Flex>
       <Flex direction="column" gap={4} mt={4}>
         {filteredPosts.map((post: Post) => (
-          <PostCard post={post} />
+          <PostCard post={post} key={post._id} />
         ))}
       </Flex>
     </Box>
   );
-};
+});
 
-const Timeline = memo(() => {
+const Timeline = memo(function Timeline() {
   const { data: techNews = [] } = useTechNews();
 
   return (
@@ -90,8 +88,8 @@ const Timeline = memo(() => {
         >
           <Text fontSize={"2xl"}>Tech News</Text>
           <OrderedList mt={2}>
-            {techNews.map((news) => (
-              <ListItem>{news.title}</ListItem>
+            {techNews.map((news, index) => (
+              <ListItem key={index}>{news.title}</ListItem>
             ))}
           </OrderedList>
         </Box>

@@ -4,7 +4,6 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ChakraProvider } from "@chakra-ui/react";
-import { RequestLoading } from "@/Components/RequestLoading/RequestLoading";
 import NextTopLoader from "nextjs-toploader";
 import { useEffect, useMemo, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
@@ -66,7 +65,6 @@ export default function RootLayout({
         <NextTopLoader showSpinner={false} />
         <ToastContainer autoClose={2000} />
         <QueryClientProvider client={queryClient}>
-          <RequestLoading />
           <ChakraProvider>{children}</ChakraProvider>
         </QueryClientProvider>
       </body>

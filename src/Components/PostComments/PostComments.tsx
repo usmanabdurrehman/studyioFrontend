@@ -45,7 +45,7 @@ export default function PostComments({ post }: { post: Post }) {
             </Field>
             <Box mt={2}>
               {postComments?.map((postComment, index) => (
-                <Box mt={2} mb={2}>
+                <Box mt={2} mb={2} key={index}>
                   <Comment comment={postComment} />
                   {index !== postComments?.length - 1 && (
                     <Divider m={"2px 0"} />
