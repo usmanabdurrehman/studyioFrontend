@@ -1,10 +1,10 @@
 "use client";
 
-import { Layout } from "../../../Components/Layout";
-import { PostCard } from "../../../Components/PostCard";
-import { useProgressRouter } from "../../../hooks";
-import { usePostById } from "../../../queries";
-import { Post } from "../../../types";
+import { Layout } from "@/Components/Layout";
+import { PostCard } from "@/Components/PostCard";
+import { useProgressRouter } from "@/hooks";
+import { usePostById } from "@/queries";
+import { Post } from "@/types";
 import React from "react";
 
 export default function PostPage({ params }: { params: { id: string } }) {
