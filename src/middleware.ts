@@ -6,6 +6,19 @@ export function middleware(request: NextRequest) {
   const currentUser = request.cookies.get("token")?.value;
   const pathname = request.nextUrl.pathname;
 
+  console.log({
+    currentUser,
+    pathname,
+    firstCond: ![
+      pathname === PATH.TIMELINE,
+      pathname.startsWith(PATH.PROFILE),
+      pathname.startsWith(PATH.POST),
+    ].some((cond) => cond),
+    secondCond: ![pathname === PATH.SIGNIN, pathname === PATH.SIGNUP].some(
+      (cond) => cond
+    ),
+  });
+
   if (
     currentUser &&
     ![
