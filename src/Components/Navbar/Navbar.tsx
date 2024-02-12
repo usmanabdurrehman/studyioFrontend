@@ -70,7 +70,6 @@ export const Navbar = memo(function Navbar() {
 
   const navigateToPostPage = useCallback(
     (postId: string) => {
-      console.log(PATH.getPostPath(postId));
       router.push(PATH.getPostPath(postId));
     },
     [router]
@@ -181,6 +180,7 @@ export const Navbar = memo(function Navbar() {
             <Button
               onClick={async () => {
                 await logout();
+                localStorage.removeItem("token");
                 router.push(PATH.SIGNIN);
               }}
               size="xs"

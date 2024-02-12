@@ -8,7 +8,6 @@ import {
   Box,
   Button,
   Flex,
-  Icon,
   IconButton,
   Image,
   Spinner,
@@ -17,15 +16,9 @@ import { FileUpload } from "../FileUpload";
 import { Formik, FormikHelpers } from "formik";
 import { useAddPost, useEditPost } from "@/mutations";
 import { Attachment, Post } from "@/types";
-import { buildFormikFormData } from "@/utils";
 import { useProfileInfo, useTimelinePosts } from "@/queries";
-import {
-  FileIcon,
-  defaultStyles,
-  FileIconProps,
-  DefaultExtensionType,
-} from "react-file-icon";
-import { CardImage, Paperclip, X, XLg } from "react-bootstrap-icons";
+import { FileIcon, defaultStyles, DefaultExtensionType } from "react-file-icon";
+import { CardImage, Paperclip, X } from "react-bootstrap-icons";
 
 interface AddPostCardProps {
   post?: Post;
@@ -42,8 +35,8 @@ export const AddPostCard = memo(function AddPostCard({
   post,
   onSubmit: handleSubmit,
 }: AddPostCardProps) {
-  const { mutateAsync: addPost, isLoading: isAddPostLoading } = useAddPost();
-  const { mutateAsync: editPost, isLoading: isEditPostLoading } = useEditPost();
+  const { mutateAsync: addPost } = useAddPost();
+  const { mutateAsync: editPost } = useEditPost();
 
   const { refetch: refetchTimeline } = useTimelinePosts();
   const { refetch: refetchProfileInfo } = useProfileInfo();
@@ -108,8 +101,7 @@ export const AddPostCard = memo(function AddPostCard({
       } else {
         await addPost(formdata);
       }
-      refetchTimeline();
-      refetchProfileInfo();
+      await Promise.all([refetchTimeline(), refetchProfileInfo()]);
       handleSubmit && handleSubmit();
       resetForm();
     },
@@ -118,7 +110,7 @@ export const AddPostCard = memo(function AddPostCard({
 
   return (
     <Formik initialValues={initialValues} onSubmit={onSubmit}>
-      {({ values, setFieldValue, submitForm }) => {
+      {({ values, setFieldValue, submitForm, isSubmitting }) => {
         return (
           <Box width={"100%"} background="white" boxShadow={"md"}>
             <Flex
@@ -270,7 +262,7 @@ export const AddPostCard = memo(function AddPostCard({
                   onClick={submitForm}
                   width="90px"
                 >
-                  {isAddPostLoading || isEditPostLoading ? (
+                  {isSubmitting ? (
                     <Spinner size="xs" />
                   ) : post ? (
                     "Update"

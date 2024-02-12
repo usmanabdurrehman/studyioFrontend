@@ -9,6 +9,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { usePathname, useSearchParams } from "next/navigation";
 import * as NProgress from "nprogress";
+import { useAuth } from "@/hooks";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,7 +20,6 @@ const showAlertToast = (data: unknown) => {
   };
   if (response?.alert) {
     const { type, msg } = response.alert;
-    console.log("yo");
     if (type === "success") toast.success(msg);
     else toast.error(msg);
   }
@@ -53,6 +53,8 @@ export default function RootLayout({
 }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  useAuth();
 
   useEffect(() => {
     NProgress.done();

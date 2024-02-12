@@ -45,7 +45,10 @@ const SignIn = memo(function SignIn() {
   const onSubmit = useCallback(
     async (values: SigninForm) => {
       const data = await signin(values);
-      if (data?.auth) router.push(PATH.TIMELINE);
+      if (data?.auth) {
+        localStorage.setItem("token", data?.token);
+        router.push(PATH.TIMELINE);
+      }
     },
     [router, signin]
   );

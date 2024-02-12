@@ -1,7 +1,7 @@
 import { useAddComment } from "@/mutations";
 import { useProfileInfo, useTimelinePosts } from "@/queries";
 import { Post } from "@/types";
-import { Box, Button, Divider, Input } from "@chakra-ui/react";
+import { Box, Button, Divider, Input, Spinner } from "@chakra-ui/react";
 import { Field, FieldProps, Formik } from "formik";
 import React, { useState } from "react";
 
@@ -26,7 +26,7 @@ export default function PostComments({ post }: { post: Post }) {
         resetForm();
       }}
     >
-      {({ submitForm }) => (
+      {({ submitForm, isSubmitting, values }) => (
         <Box>
           <Box flex="1">
             <Field name="comment">
@@ -55,14 +55,25 @@ export default function PostComments({ post }: { post: Post }) {
             </Box>
 
             {post.comments?.length > 2 && (
-              <Button size="xs" onClick={() => setShowMore(!showMore)}>
+              <Button
+                size="xs"
+                onClick={() => setShowMore(!showMore)}
+                mt={4}
+                mb={4}
+              >
                 {showMore ? "Show Less" : "Show More"}
               </Button>
             )}
           </Box>
           <Box>
-            <Button colorScheme={"blue"} size="sm" onClick={submitForm}>
-              Comment
+            <Button
+              colorScheme={"blue"}
+              size="sm"
+              onClick={submitForm}
+              width="90px"
+              isDisabled={!values.comment}
+            >
+              {isSubmitting ? <Spinner size="xs" /> : "Comment"}
             </Button>
           </Box>
         </Box>
