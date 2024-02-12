@@ -9,7 +9,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { usePathname, useSearchParams } from "next/navigation";
 import * as NProgress from "nprogress";
-import { useAuth } from "@/hooks";
+import { useKeepAlive } from "@/hooks/useKeepAlive";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -46,6 +46,11 @@ const queryClient = new QueryClient({
   },
 });
 
+const KeepAlive = () => {
+  useKeepAlive();
+  return null;
+};
+
 export default function RootLayout({
   children,
 }: {
@@ -54,11 +59,24 @@ export default function RootLayout({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  useAuth();
-
   useEffect(() => {
     NProgress.done();
   }, [pathname, searchParams]);
+
+  useEffect(() => {
+    toast(
+      "First request to the server could take 10-15 seconds due to the server being inactive. Subsequent requests would be much faster",
+      {
+        autoClose: false,
+        position: "top-right",
+        hideProgressBar: false,
+        closeOnClick: true,
+        progress: 1,
+        theme: "light",
+        type: "info",
+      }
+    );
+  }, []);
 
   return (
     <html lang="en">
@@ -70,6 +88,7 @@ export default function RootLayout({
         <NextTopLoader showSpinner={false} />
         <ToastContainer autoClose={2000} />
         <QueryClientProvider client={queryClient}>
+          <KeepAlive />
           <ChakraProvider>{children}</ChakraProvider>
         </QueryClientProvider>
       </body>

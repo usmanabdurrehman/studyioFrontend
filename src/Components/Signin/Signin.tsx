@@ -19,6 +19,7 @@ import Link from "next/link";
 import { useProgressRouter } from "@/hooks";
 import * as Yup from "yup";
 import { PATH } from "@/constants";
+import Cookies from "js-cookie";
 
 type SigninForm = {
   email: string;
@@ -46,7 +47,7 @@ const SignIn = memo(function SignIn() {
     async (values: SigninForm) => {
       const data = await signin(values);
       if (data?.auth) {
-        localStorage.setItem("token", data?.token);
+        Cookies.set("token", data?.token);
         router.push(PATH.TIMELINE);
       }
     },

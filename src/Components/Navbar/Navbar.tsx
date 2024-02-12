@@ -34,6 +34,7 @@ import { NotificationAction } from "@/types";
 import { Bell, BellFill } from "react-bootstrap-icons";
 import { useProgressRouter } from "@/hooks";
 import { PATH } from "@/constants";
+import Cookies from "js-cookie";
 
 export const Navbar = memo(function Navbar() {
   const { data: user } = useLoggedUser();
@@ -180,7 +181,7 @@ export const Navbar = memo(function Navbar() {
             <Button
               onClick={async () => {
                 await logout();
-                localStorage.removeItem("token");
+                Cookies.remove("token");
                 router.push(PATH.SIGNIN);
               }}
               size="xs"
