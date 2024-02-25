@@ -53,3 +53,14 @@ export interface Notification extends Abstract {
   postId: string;
   profileImage: string;
 }
+
+export interface Message extends Abstract {
+  sentBy: string;
+  text: string;
+  seen: boolean;
+}
+
+export interface Conversation extends Abstract {
+  participants: User[];
+  messages: Message[];
+}

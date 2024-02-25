@@ -14,12 +14,12 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Field, FieldProps, Formik } from "formik";
-import React, { memo, useCallback, useMemo } from "react";
+import React, { memo, useCallback } from "react";
 import Link from "next/link";
-import { useProgressRouter } from "@/hooks";
+import { useAuth, useProgressRouter } from "@/hooks";
 import * as Yup from "yup";
 import { PATH } from "@/constants";
-import Cookies from "js-cookie";
+import { useStore } from "@/store";
 
 type SigninForm = {
   email: string;
@@ -42,12 +42,15 @@ const SignIn = memo(function SignIn() {
   const { mutateAsync: signin, isLoading } = useSignin();
 
   const router = useProgressRouter();
+  const { handleLogin } = useAuth();
+  const { setLoggedInUserId } = useStore();
 
   const onSubmit = useCallback(
     async (values: SigninForm) => {
       const data = await signin(values);
       if (data?.auth) {
-        Cookies.set("token", data?.token);
+        setLoggedInUserId(data?.user?._id);
+        handleLogin({ rememberMe: values.rememberMe, token: data?.token });
         router.push(PATH.TIMELINE);
       }
     },

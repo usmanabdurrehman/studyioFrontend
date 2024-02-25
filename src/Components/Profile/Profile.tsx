@@ -171,15 +171,18 @@ const Profile = memo(function Profile({ userId }: { userId: string }) {
         <PostContent posts={profileInfo?.posts} />
       </Box>
       {userId !== loggedUserId && profileInfo?.user && (
-        <Box pos={"fixed"} bottom={14} right={14}>
-          <IconButton
-            aria-label="follow/unfollow"
-            pos={"absolute"}
-            colorScheme={isFollowing ? "whatsapp" : "linkedin"}
-            icon={isFollowing ? <PersonFillDash /> : <PersonFillAdd />}
-            onClick={isFollowing ? onUnfollow : onFollow}
-          />
-        </Box>
+        <IconButton
+          pos={"fixed"}
+          bottom={"70px"}
+          right={3}
+          aria-label="follow/unfollow"
+          position={"fixed"}
+          colorScheme={isFollowing ? "whatsapp" : "linkedin"}
+          icon={isFollowing ? <PersonFillDash /> : <PersonFillAdd />}
+          onClick={isFollowing ? onUnfollow : onFollow}
+          borderRadius="50%"
+          size="lg"
+        />
       )}
     </Box>
   );

@@ -1,7 +1,6 @@
 "use client";
 
-import { Layout } from "@/Components/Layout";
-import { PostCard } from "@/Components/PostCard";
+import { PostCard, Layout } from "@/Components";
 import { PATH } from "@/constants";
 import { useProgressRouter } from "@/hooks";
 import { usePostById } from "@/queries";

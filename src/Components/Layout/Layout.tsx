@@ -2,6 +2,7 @@
 
 import { Box, Container, Flex } from "@chakra-ui/react";
 import React from "react";
+import Chat from "../Chat/Chat";
 import { Footer } from "../Footer";
 import { Navbar } from "../Navbar/Navbar";
 
@@ -14,6 +15,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           {children}
         </Box>
       </Container>
+      <Chat />
       <Footer />
     </Flex>
   );

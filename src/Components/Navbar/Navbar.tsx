@@ -31,10 +31,10 @@ import { memo, useCallback, useRef, useState } from "react";
 
 import { useSeeNotifications } from "@/mutations";
 import { NotificationAction } from "@/types";
-import { Bell, BellFill } from "react-bootstrap-icons";
-import { useProgressRouter } from "@/hooks";
+import { BellFill } from "react-bootstrap-icons";
+import { useAuth, useProgressRouter } from "@/hooks";
 import { PATH } from "@/constants";
-import Cookies from "js-cookie";
+import { useStore } from "@/store";
 
 export const Navbar = memo(function Navbar() {
   const { data: user } = useLoggedUser();
@@ -76,8 +76,20 @@ export const Navbar = memo(function Navbar() {
     [router]
   );
 
+  const { handleLogout } = useAuth();
+  const { setLoggedInUserId } = useStore();
+
   return (
-    <Box bg="#000036" h={"70px"} color="white">
+    <Box
+      bg="#000036"
+      h={"70px"}
+      color="white"
+      pos="sticky"
+      left={0}
+      right={0}
+      top={0}
+      zIndex={100}
+    >
       <Container maxW="1360" h="100%">
         <Flex h="100%" alignItems={"center"} justifyContent={"space-between"}>
           <Box>
@@ -181,7 +193,8 @@ export const Navbar = memo(function Navbar() {
             <Button
               onClick={async () => {
                 await logout();
-                Cookies.remove("token");
+                handleLogout();
+                setLoggedInUserId(undefined);
                 router.push(PATH.SIGNIN);
               }}
               size="xs"

@@ -6,3 +6,6 @@ export { useTechNews } from "./useTechNews";
 export { usePostById } from "./usePostById";
 export { useNotifications } from "./useNotifications";
 export { useLoggedUser } from "./useLoggedUser";
+export { useConversationsByUser } from "./useConversationsByUser";
+export { useConversationsByName } from "./useConversationsByName";
+export { useConversationById } from "./useConversationById";

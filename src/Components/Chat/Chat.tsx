@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, memo, useState } from "react";
+import React, { useEffect, useRef, memo, useState, useMemo } from "react";
 
 import SwipeableViews from "react-swipeable-views";
 
@@ -10,28 +10,75 @@ import {
   Input,
   List,
   ListItem,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  Spinner,
+  Text,
 } from "@chakra-ui/react";
-import { ArrowLeft, ChevronLeft } from "react-bootstrap-icons";
+import { ChatLeft, ChevronLeft } from "react-bootstrap-icons";
+import {
+  useConversationById,
+  useConversationsByName,
+  useConversationsByUser,
+  useLoggedUser,
+} from "@/queries";
+import { useCreateConversation } from "@/mutations";
+import { useStore } from "@/store";
+import { Conversation } from "@/types";
 
-const messages: any[] = [];
-const message: any = {};
-const openConversation = () => {};
-const onSearchChange = () => {};
-const openedChat = () => {};
-const openedChatMember = () => {};
-const searchString = "";
-const startConversation = () => {};
-const sendMessage = () => {};
-const goBackToChatList = () => {};
-const onMessageChange = () => {};
+const ChatListItem = ({
+  profileImage,
+  name,
+  onClick,
+}: {
+  profileImage: string | undefined;
+  name: string | undefined;
+  onClick: () => void;
+}) => {
+  return (
+    <ListItem
+      h={"30px"}
+      cursor="pointer"
+      _hover={{ background: "#eee" }}
+      onClick={onClick}
+    >
+      <Flex gap={2} alignItems="center">
+        <Image
+          src={profileImage}
+          alt={`${name}'s Profile Picture`}
+          width={"30px"}
+          height={"30px"}
+          borderRadius={4}
+        />
+        <Text fontSize={"xs"}>{name}</Text>
+      </Flex>
+    </ListItem>
+  );
+};
 
-const conversations: any[] = [];
-const searchNames: any[] = [];
-
-const Chat = memo(function Chat({}) {
+const ChatView = memo(function Chat({}) {
   const [index, setSelectedIndex] = useState(0);
-  const userId = 1;
+  const [message, setMessage] = useState("");
+  const [search, setSearch] = useState("");
+  const { data: loggedUser } = useLoggedUser();
+  const userId = loggedUser?._id;
   const messagesContainer = useRef<HTMLDivElement>(null);
+  const { data: conversations } = useConversationsByUser();
+  const { data: searchNames } = useConversationsByName(search);
+
+  const [conversationId, setConversationId] = useState<string>();
+  const { data: openedChat, isLoading: isConversationLoading } =
+    useConversationById(conversationId);
+  const { mutateAsync: createConversation } = useCreateConversation();
+
+  const openedChatMember = useMemo(
+    () =>
+      openedChat?.participants?.find(
+        (participant) => participant._id !== userId
+      ),
+    [openedChat, userId]
+  );
 
   useEffect(() => {
     if (messagesContainer.current) {
@@ -43,6 +90,30 @@ const Chat = memo(function Chat({}) {
     }
   }, []);
 
+  const lastOpenedChat = useRef<Conversation | null>(null);
+
+  const { socket } = useStore();
+
+  useEffect(() => {
+    if (openedChat) {
+      lastOpenedChat.current &&
+        socket?.emit("leaveRoom", { id: lastOpenedChat.current?._id });
+      socket?.emit("joinRoom", { id: openedChat._id });
+
+      lastOpenedChat.current = openedChat;
+    }
+  }, [socket, openedChat]);
+
+  useEffect(() => {
+    if (messagesContainer.current) {
+      messagesContainer.current.scrollTo({
+        left: 0,
+        top: messagesContainer.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  }, [openedChat?.messages]);
+
   return (
     <Flex
       width={250}
@@ -53,23 +124,31 @@ const Chat = memo(function Chat({}) {
       bg="white"
       direction={"column"}
     >
-      <Box
-        padding="10px 0"
-        position={"relative"}
-        textAlign={"center"}
-        color={"white"}
-        bg="blue"
-      >
-        {"Inbox"}
-        {index === 1 && (
-          <IconButton
-            icon={<ChevronLeft />}
-            aria-label="Go back"
-            position="absolute"
-            right="5px"
-          />
-        )}
-      </Box>
+      <Flex pr={1} pl={1} alignItems={"center"} bg="#000036" h={10}>
+        <Box width="20px">
+          {index === 1 && (
+            <IconButton
+              icon={<ChevronLeft />}
+              size="xs"
+              aria-label="Go back"
+              bg="transparent"
+              color="white"
+              onClick={() => {
+                setConversationId(undefined);
+                setSelectedIndex(0);
+              }}
+              _hover={{
+                color: "white",
+              }}
+              _focus={{ bg: "transparent" }}
+            />
+          )}
+        </Box>
+        <Text flex="1" color="white" textAlign="center" fontSize="sm">
+          {openedChatMember?.name || "Inbox"}
+        </Text>
+        <Box width="20px"></Box>
+      </Flex>
       {/*@ts-ignore*/}
       <SwipeableViews
         index={index}
@@ -79,69 +158,71 @@ const Chat = memo(function Chat({}) {
         <Flex direction="column" position={"relative"} height="100%">
           <Input
             placeholder="Search..."
-            value={searchString}
-            padding={1}
+            value={search}
             width="100%"
             borderRadius="none"
-            onChange={onSearchChange}
-            fontSize="11px"
+            onChange={(e) => setSearch(e.target.value)}
+            fontSize="12px"
           />
-          {conversations && conversations?.length ? (
-            <List>
-              {conversations.map(({ profileImage, name }) => {
-                return (
-                  <ListItem key={name}>
-                    <Flex gap={2}>
-                      <Image
-                        src={profileImage}
-                        alt=""
-                        width={25}
-                        height={25}
-                        borderRadius={4}
-                      />
-                      <div>{name}</div>
-                    </Flex>
-                  </ListItem>
-                );
-              })}
-            </List>
-          ) : (
-            !searchNames?.length && (
-              <Flex
-                height="100%"
-                flex="1"
-                color="#999"
-                fontSize={13}
-                padding="0 15px"
-                alignItems={"center"}
-              >
-                Sorry, you have not got any conversation yet.
-              </Flex>
-            )
-          )}
-          {searchNames && (
-            <List>
-              {conversations && conversations.length > 0 && (
-                <Box pl={2}>
-                  <h5>More People</h5>
-                </Box>
-              )}
-              {searchNames.map(({ name, profileImage }) => (
-                <ListItem key={name}>
-                  <Flex gap={2}>
-                    <Image
-                      src={profileImage}
-                      alt=""
-                      width={25}
-                      height={25}
-                      borderRadius={4}
+          <Box flex="1" overflow="auto" pt={2}>
+            {conversations && conversations?.length ? (
+              <List>
+                {conversations.map((conversation) => {
+                  const { name, profileImage } =
+                    conversation.participants.find(
+                      (participant) => participant._id !== userId
+                    ) || {};
+                  return (
+                    <ChatListItem
+                      key={name}
+                      name={name}
+                      profileImage={profileImage}
+                      onClick={() => {
+                        setConversationId(conversation?._id);
+                        setSelectedIndex(1);
+                      }}
                     />
-                    <div>{name}</div>
-                  </Flex>
-                </ListItem>
-              ))}
-            </List>
-          )}
+                  );
+                })}
+              </List>
+            ) : (
+              !searchNames?.length && (
+                <Flex
+                  height="100%"
+                  flex="1"
+                  color="#999"
+                  fontSize={13}
+                  padding="0 15px"
+                  alignItems={"center"}
+                >
+                  Sorry, you have not got any conversation yet.
+                </Flex>
+              )
+            )}
+            {searchNames && (
+              <List>
+                {conversations && conversations.length > 0 && (
+                  <Box m={2}>
+                    <Text fontWeight={"bold"} fontSize="xs">
+                      More People
+                    </Text>
+                  </Box>
+                )}
+                {searchNames.map(({ name, profileImage, _id }) => (
+                  <ChatListItem
+                    key={name}
+                    name={name}
+                    profileImage={profileImage}
+                    onClick={async () => {
+                      const data = await createConversation(_id);
+                      setConversationId(data?._id);
+                      setSelectedIndex(1);
+                    }}
+                  />
+                ))}
+              </List>
+            )}
+          </Box>
         </Flex>
         <Flex
           height="100%"
@@ -157,23 +238,28 @@ const Chat = memo(function Chat({}) {
             overflow="auto"
             ref={messagesContainer}
           >
-            {messages.map(({ text, sentBy }) => (
+            {isConversationLoading && (
+              <Flex flex="1" alignItems={"center"} justifyContent="center">
+                <Spinner size="sm" />
+              </Flex>
+            )}
+            {openedChat?.messages?.map(({ text, sentBy }) => (
               <Box
                 key={sentBy}
                 padding="5px"
                 fontSize="12px"
                 borderRadius="0 4px 0 4px"
                 margin="10px 0"
-                width="90%"
+                width="80%"
                 {...(sentBy === userId
                   ? {
-                      backgroundColor: "blue",
-                      color: "white",
+                      backgroundColor: "#f0eded",
+                      color: "black",
                       alignSelf: "flex-start",
                     }
                   : {
-                      backgroundColor: "#f4f4f4",
-                      color: "black",
+                      backgroundColor: "#007bff",
+                      color: "white",
                       alignSelf: "flex-end",
                     })}
               >
@@ -181,12 +267,23 @@ const Chat = memo(function Chat({}) {
               </Box>
             ))}
           </Flex>
-          <Box height={40}>
-            <form onSubmit={sendMessage}>
+          <Box>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                socket?.emit("message", {
+                  message,
+                  conversationId: openedChat?._id,
+                });
+                setMessage("");
+              }}
+            >
               <Input
                 placeholder="Write here...."
+                _placeholder={{ fontSize: "12px" }}
+                fontSize="12px"
                 value={message}
-                onChange={onMessageChange}
+                onChange={(e) => setMessage(e.target.value)}
               />
             </form>
           </Box>
@@ -196,4 +293,24 @@ const Chat = memo(function Chat({}) {
   );
 });
 
-export default Chat;
+export default function Chat() {
+  return (
+    <Popover placement="top-start" closeOnBlur={false} closeOnEsc>
+      <PopoverTrigger>
+        <IconButton
+          aria-label="Open Chat"
+          borderRadius="50%"
+          colorScheme={"whatsapp"}
+          icon={<ChatLeft />}
+          pos="fixed"
+          bottom={3}
+          right={3}
+          size="lg"
+        />
+      </PopoverTrigger>
+      <PopoverContent width="auto">
+        <ChatView />
+      </PopoverContent>
+    </Popover>
+  );
+}

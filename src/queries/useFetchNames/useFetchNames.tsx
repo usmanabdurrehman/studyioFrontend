@@ -14,9 +14,6 @@ export const useFetchNames = (name: string) => {
     },
     {
       enabled: !!name,
-      meta: {
-        skipGlobalLoader: true,
-      },
     }
   );
 };

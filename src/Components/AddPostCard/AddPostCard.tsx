@@ -11,6 +11,7 @@ import {
   IconButton,
   Image,
   Spinner,
+  Text,
 } from "@chakra-ui/react";
 import { FileUpload } from "../FileUpload";
 import { Formik, FormikHelpers } from "formik";
@@ -120,7 +121,9 @@ export const AddPostCard = memo(function AddPostCard({
               justifyContent={"space-between"}
               p={2}
             >
-              <Box>{post ? "Edit Post" : "New Post"}</Box>
+              <Box>
+                <Text fontSize={"sm"}>{post ? "Edit Post" : "New Post"}</Text>
+              </Box>
               <Flex gap={2}>
                 <FileUpload
                   icon={<CardImage />}

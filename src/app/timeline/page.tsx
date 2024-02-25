@@ -1,5 +1,4 @@
-import { Layout } from "@/Components/Layout";
-import { Timeline } from "@/Components/Timeline";
+import { Layout, Timeline } from "@/Components";
 import React from "react";
 
 export default function TimelinePage() {
